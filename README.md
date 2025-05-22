@@ -5,7 +5,8 @@ Main config file
 /etc/datadog-agent/datadog.yaml
 
 
-Applications startup script
+Applications startup script.
+
 nohup java -javaagent:/myproject/spring-petclinic/target/dd-java-agent.jar \
   -Ddd.profiling.enabled=true \
   -XX:FlightRecorderOptions=stackdepth=256 \
