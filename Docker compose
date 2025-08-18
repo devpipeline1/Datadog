@@ -1,0 +1,21 @@
+sudo curl -L "https://github.com/docker/compose/releases/download/v2.38.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+- -L: Follows redirects.
+- $(uname -s): system name (e.g., Linux).
+- $(uname -m): machine architecture (e.g., x86_64).
+
+2. Make It Executable
+sudo chmod +x /usr/local/bin/docker-compose
+
+3. Verify Installation
+docker-compose --version
+
+4.export /usr/local/bin
+export PATH=$PATH:/usr/local/bin
+
+5. .bashrc
+echo "export PATH=$PATH:/usr/local/bin" >> ~/.bashrc
+source ~/.base
+
+
+docker-compose -f compose.yaml -f docker-compose.override.yaml up -d --build frontend
