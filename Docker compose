@@ -1,3 +1,9 @@
+Prerequisite
+
+Install docker and git
+
+yum install git docker -y
+
 1.Download docker-compose
 sudo curl -L "https://github.com/docker/compose/releases/download/v2.38.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 
