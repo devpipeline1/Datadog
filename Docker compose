@@ -1,3 +1,4 @@
+1.Download docker-compose
 sudo curl -L "https://github.com/docker/compose/releases/download/v2.38.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 
 - -L: Follows redirects.
@@ -10,20 +11,75 @@ sudo chmod +x /usr/local/bin/docker-compose
 3. Verify Installation
 docker-compose --version
 
-4.export /usr/local/bin
+(Optional)
+export /usr/local/bin
 export PATH=$PATH:/usr/local/bin
-
-5. .bashrc
 echo "export PATH=$PATH:/usr/local/bin" >> ~/.bashrc
 source ~/.base
 
-6.clone easytrade git repo
+4.clone easytrade git repo
  git clone https://github.com/Dynatrace/easytrade.git
 
+5.Run compose.yaml
 docker-compose -f compose.yaml up -d
 
 access server via <publicip:80>
 
-go to datadog portal -->Install agent -->select docker, copy below code and run on host where your docker running
+================================
+Install datadog agent on docker
+================================
+1.go to datadog portal -->Install agent -->select docker, copy code and run on host where your docker running
+
+2.check container metrics in datadog portal
+
+===============
+Configure RUM
+===============
+1.go to datadog portal -->Dingital experience-->Manage application-->New Application
+
+cd /myproject/easytrade/src/frontend
+
+2.Insert your Datadog RUM script inside the <head> tag of src/frontend/index.html.
+<!-- Below script is datadog RUM -->
+<script
+    src="https://www.datadoghq-browser-agent.com/us5/v6/datadog-rum.js"
+    type="text/javascript">
+</script>
+<script>
+    window.DD_RUM && window.DD_RUM.init({
+      clientToken: 'pub17bccbe005909c223e8ad9b491b680fe',
+      applicationId: 'ac4a46d5-1a77-4a2a-8ff1-8b5e9dbca4c9',
+      // `site` refers to the Datadog site parameter of your organization
+      // see https://docs.datadoghq.com/getting_started/site/
+      site: 'us5.datadoghq.com',
+      service: 'myapp',
+      env: 'dev',
+      // Specify a version number to identify the deployed version of your application in Datadog
+      // version: '1.0.0',
+      sessionSampleRate: 100,
+      sessionReplaySampleRate: 20,
+      defaultPrivacyLevel: 'mask-user-input',
+    });
+</script>
+
+3. Build a Custom Frontend Image From the src/frontend directory, run:
+docker build -t easytrade-frontend:rum .
+
+4. Find the frontend service in compose.yaml and change the image line:
+frontend:
+  <<: *default-service
+  image: easytrade-frontend:rum
+  depends_on:
+    - broker-service
+    - loginservice
+    - pricing-service
+    - accountservice
+    - credit-card-order-service
+5. stop docker containers
+docker-compose down
+
+6.start docker containers with updated build
+ docker-compose up --build -d
+
 
 docker-compose -f compose.yaml -f docker-compose.override.yaml up -d --build frontend
