@@ -2,7 +2,7 @@ Prerequisite
 
 Install docker and git
 yum install git docker -y
-
+docker info
 systemctl start docker
 systemctl enable docker
 
@@ -26,7 +26,7 @@ export PATH=$PATH:/usr/local/bin
 echo "export PATH=$PATH:/usr/local/bin" >> ~/.bashrc
 source ~/.base
 
-4.clone easytrade git repo
+4.clone easytrade git repo (run this command from /myproject)
  git clone https://github.com/Dynatrace/easytrade.git
 
 5.Run compose.yaml
