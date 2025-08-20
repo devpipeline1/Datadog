@@ -1,0 +1,27 @@
+================================================
+/etc/datadog-agent/checks.d/custom_test_count.py
+================================================
+from datadog_checks.base import AgentCheck
+import os, time
+
+_version_ = "1.0.0"
+
+class CustomTestCount(AgentCheck):
+    def check(self, instance):
+        count = 0
+        dir_path = "/tmp"
+
+        for path in os.listdir(dir_path):
+            if (int(time.time()) - int(os.path.getctime(os.path.join(dir_path, path))) < 60):
+                count += 1
+
+        print(count)
+
+        self.count("file.modified.count", count, tags=["env:local", "app:myapp“, “dir:bankdetails”])
+
+=====================================================================
+/etc/datadog-agent/conf.d/custom_test_count.d/custom_test_count.yaml
+====================================================================
+
+instances:
+  - min_collection_interval: 60
