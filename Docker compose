@@ -32,12 +32,12 @@ source ~/.base
 5.Run compose.yaml
 docker-compose -f compose.yaml up -d
 
-access server via <publicip:80>
+access application via browser <publicip:80>
 
 ================================
 Install datadog agent on docker
 ================================
-1.go to datadog portal -->Install agent -->select docker, copy code and run on host where your docker running
+1.go to datadog portal -->Install agent -->select docker -->please enable APM config, copy code and run on host where your docker running
 
 2.check container metrics in datadog portal
 
@@ -84,11 +84,10 @@ frontend:
     - pricing-service
     - accountservice
     - credit-card-order-service
+'
 5. stop docker containers
 docker-compose down
 
 6.start docker containers with updated build
  docker-compose up --build -d
 
-
-docker-compose -f compose.yaml -f docker-compose.override.yaml up -d --build frontend
