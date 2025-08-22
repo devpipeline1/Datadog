@@ -41,7 +41,7 @@ curl -sL "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_ch
 
 tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp && rm eksctl_$PLATFORM.tar.gz
 
-sudo mv /tmp/eksctl /usr/local/bin
+sudo install -m 0755 /tmp/eksctl /usr/local/bin && rm /tmp/eksctl
 ####################################################################################################################################
 AWS CLI – A command line tool for working with AWS services, including Amazon EKS. For more information, see Installing, updating, and uninstalling the AWS CLI in the AWS Command Line Interface User Guide. After installing the AWS CLI, we recommend that you also configure it. For more information, see Quick configuration with aws configure in the AWS Command Line Interface User Guide.
 ####################################################################################################################################
