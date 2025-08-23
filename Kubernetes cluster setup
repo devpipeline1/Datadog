@@ -106,3 +106,17 @@ eksctl create cluster --name my-cluster1 --region ap-south-1
 ```
 eksctl delete cluster --name my-cluster1 --region ap-south-1
 ```
+convert local image to registry image
+
+- Tag the image:
+docker tag my-local-image:latest <your-registry>/<your-image>:latest
+
+- Push to registry:
+docker push <your-registry>/<your-image>:latest
+
+- Update your deployment YAML:
+image: <your-registry>/<your-image>:latest
+
+
+
+
