@@ -1,0 +1,68 @@
+1.Install git and java
+     Yum install git
+     Yum install java-17
+
+2.Create a directory for project
+mkdir -p /myproject
+chmod 777 -R /myproject
+
+3.Clone pet clinic application in server
+cd /myproject
+git clone https://github.com/spring-projects/spring-petclinic.git
+
+4.Convert as package using maven 
+cd /myproject/spring-petclinic/
+./mvnw package
+
+5.Run application in raw format and check access
+    java –jar tartget/*.jar
+
+6.access application via browser
+   <ip address>:8080
+
+7.Enable apm_config in datadog.yaml file and restart
+
+8.Create apm application in datadog portal
+
+9.Create script to start the service
+==================================
+nohup java -javaagent:/myproject/spring-petclinic/dd-java-agent.jar \
+  -Ddd.profiling.enabled=true \
+  -XX:FlightRecorderOptions=stackdepth=256 \
+  -Ddd.logs.injection=true \
+  -Ddd.trace.sample.rate=1 \
+  -Ddd.service=mynew \
+  -Ddd.env=prod \
+  -jar /myproject/spring-petclinic/target/spring-petclinic-3.5.0-SNAPSHOT.jar > /myproject/spring-petclinic/log/petclinic.log 2>&1 &
+
+
+==========================================
+Create a service for petclinic application
+==========================================
+
+[Unit]
+Description=Spring PetClinic Application with Datadog Java Agent
+After=network.target
+
+[Service]
+Type=simple
+User=dd-agent
+WorkingDirectory=/myproject/spring-petclinic
+ExecStart=/usr/bin/java \
+  -javaagent:/myproject/spring-petclinic/dd-java-agent.jar \
+  -Ddd.profiling.enabled=true \
+  -XX:FlightRecorderOptions=stackdepth=256 \
+  -Ddd.logs.injection=true \
+  -Ddd.trace.sample.rate=1 \
+  -Ddd.service=mynew \
+  -Ddd.env=prod \
+  -jar /myproject/spring-petclinic/target/spring-petclinic-3.5.0-SNAPSHOT.jar
+Restart=always
+RestartSec=10
+StandardOutput=file:/myproject/spring-petclinic/log/petclinic.log
+StandardError=file:/myproject/spring-petclinic/log/petclinic-error.log
+Environment=DD_API_KEY=your_datadog_api_key
+Environment=DD_SITE=datadoghq.com
+
+[Install]
+WantedBy=multi-user.target
