@@ -66,3 +66,123 @@ Environment=DD_SITE=datadoghq.com
 
 [Install]
 WantedBy=multi-user.target
+
+
+================================
+Enable postgres db
+===================
+yum install postgresql15
+sudo yum install postgresql15-server
+sudo mkdir -p /var/lib/pgsql/15/data
+sudo chown postgres:postgres /var/lib/pgsql/15/data
+sudo -u postgres /usr/bin/initdb -D /var/lib/pgsql/15/data
+     could not change directory to "/root": Permission denied
+     The files belonging to this database system will be owned by user "postgres".
+     This user must also own the server process.
+
+     The database cluster will be initialized with locale "C.UTF-8".
+     The default database encoding has accordingly been set to "UTF8".
+     The default text search configuration will be set to "english".
+
+     Data page checksums are disabled.
+
+     fixing permissions on existing directory /var/lib/pgsql/15/data ... ok
+     creating subdirectories ... ok
+     selecting dynamic shared memory implementation ... posix
+     selecting default max_connections ... 100
+     selecting default shared_buffers ... 128MB
+     selecting default time zone ... UTC
+     creating configuration files ... ok
+     running bootstrap script ... ok
+     performing post-bootstrap initialization ... ok
+     syncing data to disk ... ok
+
+     initdb: warning: enabling "trust" authentication for local connections
+     initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+
+     Success. You can now start the database server using:
+
+    /usr/bin/pg_ctl -D /var/lib/pgsql/15/data -l logfile start
+
+
+
+[root@ip-172-31-45-163 ~]# sudo -u postgres /usr/bin/pg_ctl -D /var/lib/pgsql/15/data -l /var/lib/pgsql/15/data/logfile start
+could not change directory to "/root": Permission denied
+waiting for server to start.... done
+server started
+
+to fix permission denied
+========================
+[root@ip-172-31-45-163 ~]# chmod 777 -R /var/lib/pgsql/
+[root@ip-172-31-45-163 ~]# chmod 777 -R /root
+cat /var/lib/pgsql/15/data/logfile
+chmod 700 "/var/lib/pgsql/15/data"
+[root@ip-172-31-45-163 ~]# sudo -u postgres /usr/bin/pg_ctl -D /var/lib/pgsql/15/data -l /var/lib/pgsql/15/data/logfile start
+waiting for server to start.... done
+server started
+[root@ip-172-31-45-163 ~]# ps -ef | grep postgres
+postgres  127596       1  0 18:49 ?        00:00:00 /usr/bin/postgres -D /var/lib/pgsql/15/data
+postgres  127627  127596  0 18:49 ?        00:00:00 postgres: logger
+postgres  127641  127596  0 18:49 ?        00:00:00 postgres: checkpointer
+postgres  127642  127596  0 18:49 ?        00:00:00 postgres: background writer
+postgres  127649  127596  0 18:49 ?        00:00:00 postgres: walwriter
+postgres  127650  127596  0 18:49 ?        00:00:00 postgres: autovacuum launcher
+postgres  127652  127596  0 18:49 ?        00:00:00 postgres: logical replication launcher
+root      127929  113252  0 18:49 pts/1    00:00:00 grep --color=auto postgres
+[root@ip-172-31-45-163 ~]#
+
+
+[root@ip-172-31-45-163 ~]# psql -U postgres
+psql (15.13)
+Type "help" for help.
+
+postgres=# CREATE DATABASE petclinic;
+CREATE USER petclinic WITH ENCRYPTED PASSWORD 'petclinic';
+GRANT ALL PRIVILEGES ON DATABASE petclinic TO petclinic;
+CREATE DATABASE
+CREATE ROLE
+GRANT
+postgres=# exit
+[root@ip-172-31-45-163 ~]#
+
+then add petclinic profile to Postgres db
+
+[Unit]
+Description=Spring PetClinic Application with Datadog Java Agent
+After=network.target
+
+[Service]
+Type=simple
+User=dd-agent
+WorkingDirectory=/myproject/spring-petclinic
+ExecStart=/usr/bin/java \
+  -javaagent:/myproject/spring-petclinic/dd-java-agent.jar \
+  -Ddd.profiling.enabled=true \
+  -XX:FlightRecorderOptions=stackdepth=256 \
+  -Ddd.logs.injection=true \
+  -Ddd.trace.sample.rate=1 \
+  -Ddd.service=mynew \
+  -Ddd.env=prod \
+  -jar /myproject/spring-petclinic/target/spring-petclinic-3.5.0-SNAPSHOT.jar --spring.profiles.active=postgres
+Restart=always
+RestartSec=10
+StandardOutput=file:/myproject/spring-petclinic/log/petclinic.log
+StandardError=file:/myproject/spring-petclinic/log/petclinic-error.log
+
+[Install]
+WantedBy=multi-user.target
+
+
+Update below file with below content
+
+[root@ip-172-31-45-163 spring-petclinic]# cat /myproject/spring-petclinic/src/main/resources/application-postgres.properties
+# database init, supports postgres too
+database=postgres
+spring.datasource.url=${POSTGRES_URL:jdbc:postgresql://localhost/petclinic}
+spring.datasource.username=${POSTGRES_USER:petclinic}
+spring.datasource.password=${POSTGRES_PASS:petclinic}
+# SQL is written to be idempotent so this is safe
+spring.sql.init.mode=always
+
+
+[root@ip-172-31-45-163 target]# /usr/bin/java -javaagent:/myproject/spring-petclinic/dd-java-agent.jar   -Ddd.profiling.enabled=true   -XX:FlightRecorderOptions=stackdepth=256   -jar /myproject/spring-petclinic/target/spring-petclinic-3.5.0-SNAPSHOT.jar
