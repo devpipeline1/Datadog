@@ -8,3 +8,23 @@ curl -X POST "https://http-intake.logs.us5.datadoghq.com/api/v2/logs" \
   -H "Content-Type: application/json" \
   -H "DD-API-KEY: <your_api_key>" \
   -d '[{"message": "Hi this is my test logs for datadog log mpnitoring", "ddsource": "springboot", "service": "petclinic-app"}]'
+
+inject logs from server file/custom file
+
+logs_enabled: true
+
+create config file at 
+/etc/datadog-agent/conf.d/linux_audit_logs.d/conf.yaml
+
+logs:
+  - type: file
+    path: /var/log/audit/audit.log
+    service: linux-audit
+    source: auditd
+    tags:
+      - env:prod
+      - team:security
+
+sudo systemctl restart datadog-agent
+
+datadog-agent status
