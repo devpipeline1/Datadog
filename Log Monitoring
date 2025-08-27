@@ -1,0 +1,10 @@
+Send logs to datadog via telnet
+
+you can send logs to Datadog via Telnet, though it's a bit unconventional and mostly used for testing or educational purposes. Datadog supports log ingestion over TCP port 10514, which allows you to push raw log data directly to their intake endpoint.
+
+https://docs.datadoghq.com/api/latest/logs/?site=us5
+
+curl -X POST "https://http-intake.logs.us5.datadoghq.com/api/v2/logs" \
+  -H "Content-Type: application/json" \
+  -H "DD-API-KEY: <your_api_key>" \
+  -d '[{"message": "Hi this is my test logs for datadog log mpnitoring", "ddsource": "springboot", "service": "petclinic-app"}]'
