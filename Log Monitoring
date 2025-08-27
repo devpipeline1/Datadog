@@ -28,3 +28,21 @@ logs:
 sudo systemctl restart datadog-agent
 
 datadog-agent status
+
+
+add log file for petclinic
+
+/etc/datadog-agent/conf.d/petclinic.d/petclinic.yaml
+
+logs:
+  - type: file
+    path: /myproject/spring-petclinic/log/petclinic.log
+    service: petclinic-test
+    source: petclinic
+    tags:
+      - env:prod
+      - team:apps
+sudo systemctl restart datadog-agent
+
+datadog-agent status
+
