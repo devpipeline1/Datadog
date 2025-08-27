@@ -57,3 +57,33 @@ logs:
     source: java
     sourcecategory: sourcecode
 
+==============================
+Mask Passwords in Datadog Logs
+==============================
+✅ 1. Enable Sensitive Data Scanner
+- Go to Datadog Console > Logs > Sensitive Data Scanner
+- Click “Add scanning group”
+✅ 2. Create a Scanning Rule
+- Choose from Datadog’s rule library or create a custom regex
+- Example custom rule to detect password fields:
+(?i)(password|passwd|pwd)[\s"':=]+[^,\s"']+
+
+- This matches variations like:
+- password=123456
+- "passwd": "secret"
+- pwd: hunter2
+
+✅ 3. Choose Action: Redact or Hash
+- Redact: Replaces the value with ***
+- Hash: Obscures the value using a one-way hash
+
+✅ 4. Apply to Specific Logs- Scope the rule to logs from a particular service, source, or tag (e.g., source:springboot or service:petclinic-app)
+✅ 5. Save and Monitor- Once saved, Datadog will automatically scan incoming logs and apply the masking in real time.
+🔍 Example Before & AfterBefore:{
+  "username": "admin",
+  "password": "supersecret"
+}
+After (Redacted):{
+  "username": "admin",
+  "password": "***"
+}
