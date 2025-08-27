@@ -61,8 +61,6 @@ Restart=always
 RestartSec=10
 StandardOutput=file:/myproject/spring-petclinic/log/petclinic.log
 StandardError=file:/myproject/spring-petclinic/log/petclinic-error.log
-Environment=DD_API_KEY=your_datadog_api_key
-Environment=DD_SITE=datadoghq.com
 
 [Install]
 WantedBy=multi-user.target
