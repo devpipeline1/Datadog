@@ -46,5 +46,14 @@ sudo systemctl restart datadog-agent
 
 datadog-agent status
 
-https://github.com/devpipeline1/Datadog/blob/main/image.png
+go to https://us5.datadoghq.com/logs/onboarding/server?source=java
+
+Create a file java.d/conf.yaml in the Agent’s conf.d/ directory with the following content:
+
+logs:
+  - type: file
+    path: /path/to/your/java/log.log
+    service: myapplication
+    source: java
+    sourcecategory: sourcecode
 
