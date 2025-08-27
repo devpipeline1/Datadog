@@ -47,3 +47,4 @@ sudo systemctl restart datadog-agent
 datadog-agent status
 
 https://github.com/devpipeline1/Datadog/blob/main/image.png
+
