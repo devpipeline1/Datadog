@@ -158,12 +158,15 @@ net localgroup Administrators ansibleUser /add
 linux1 ansible_host=13.232.236.97 ansible_user=ansible ansible_ssh_private_key_file=~/.ssh/id_ansible
 
 [windows]
-win1  ansible_host=14.232.332.32
-      ansible_user=ansibleUser
-      ansible_password=password@123
-      ansible_connection=winrm
-      ansible_winrm_transport=basic
-      ansible_winrm_server_cert_validation=ignore
+win1 ansible_host=3.0.0.199
+
+[windows:vars]
+ansible_user=ansibleUser
+ansible_password=password@123
+ansible_connection=winrm
+ansible_winrm_transport=basic
+ansible_winrm_server_cert_validation=ignore
+ansible_port=5985
 
 ✅ 4.Create playbook for windows on server
 vi /ansible/datadog-agent-windows.yaml
@@ -185,8 +188,7 @@ vi /ansible/datadog-agent-windows.yaml
     - name: Install Datadog Agent
       win_package:
         path: "C:\\Temp\\datadog-agent.msi"
-        arguments: "APIKEY={{ datadog_api_key }}"
-        datadog_site: us5.datadoghq.com  #Check this
+        arguments: "APIKEY={{ datadog_api_key }} SITE=us5.datadoghq.com"
         product_id: "Datadog Agent"
 
     - name: Ensure Datadog Agent is running
