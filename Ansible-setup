@@ -6,7 +6,7 @@ sudo yum install ansible -y
 
 which ansible-galaxy
 ansible-galaxy --version
-
+mkdir -p /ansible
 
 ✅ 3.Create a ansible user on server
  in Ansible, the server needs to push its key to the client so it can connect and run playbooks remotely
