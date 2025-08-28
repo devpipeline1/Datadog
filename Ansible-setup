@@ -19,6 +19,7 @@ su - ansible
 
 ✅ 4.create rsa key-pair
 ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_ansible
+ ssh-keygen -t rsa -b 4096 -f /home/ansible/.ssh/id_ansible
 
 Client end setup
 ===============
@@ -41,7 +42,7 @@ ssh-copy-id -i ~/.ssh/id_ansible.pub ansible@<client-ip>
 if the above command not wokring, then
 copy /home/ansible/.ssh/id_ansible.pub from server and paste it on client end file /home/ansible/.ssh/authorized_keys
 
-✅ 5.make password less login (run this on client)
+✅ 5.make password less login (run this on client as a root user)
 echo 'ansible ALL=(ALL) NOPASSWD:ALL' | sudo tee /etc/sudoers.d/ansible
 sudo chmod 440 /etc/sudoers.d/ansible
 
@@ -51,10 +52,10 @@ PubkeyAuthentication yes
 AuthorizedKeysFile      .ssh/authorized_keys
 
 ======================
-Install ansible galaxy
+Install ansible galaxy (server end)
 ======================
 Collections are packaged bundles of roles, modules, plugins, and documentation that extend Ansible’s core functionality.
-✅ 1.create requirement.yaml
+✅ 1.create /ansible/requirement.yaml
 collections:
   - name: datadog.dd
   - name: ansible.windows
@@ -62,13 +63,14 @@ collections:
 
 ✅ 2.Run below commands on server 
 su - ansible
-ansible-galaxy collection install -r requirements.yml
+ansible-galaxy collection install -r requirement.yaml
 
-✅ 3.Create inventory.ini
+✅ 3.Create /ansible/inventory.ini
 [linux]
 linux1 ansible_host=13.232.236.97 ansible_user=ansible ansible_ssh_private_key_file=~/.ssh/id_ansible
 
 ✅ 4.write playbook to install datadog agent on linux hosts
+vi datadog-agent.yaml
 ---
 - name: Install Datadog Agent on Linux hosts
   hosts: linux
@@ -79,7 +81,7 @@ linux1 ansible_host=13.232.236.97 ansible_user=ansible ansible_ssh_private_key_f
     - role: datadog.dd.agent
       vars:
         datadog_api_key: "{{ datadog_api_key }}"
-        datadog_site: datadoghq.com
+        datadog_site: us5.datadoghq.com
         datadog_tags:
           - env:production
           - team:backend
@@ -115,7 +117,7 @@ ansible-vault encrypt_string '30fe754d4f6c6cc99b3641a1fda9d8b2' --name datadog_a
           6137353533393064620a346165313836346536623165636533313130393538666237383361383137
           30313461303232373263663039303934396337323763656539303561306439383839643330373336
           6364343033373736346462333765633863633936626564656439
-        datadog_site: datadoghq.com
+        datadog_site: us5.datadoghq.com
         datadog_tags:
           - env:production
           - team:backend
@@ -184,6 +186,7 @@ vi /ansible/datadog-agent-windows.yaml
       win_package:
         path: "C:\\Temp\\datadog-agent.msi"
         arguments: "APIKEY={{ datadog_api_key }}"
+        datadog_site: us5.datadoghq.com  #Check this
         product_id: "Datadog Agent"
 
     - name: Ensure Datadog Agent is running
