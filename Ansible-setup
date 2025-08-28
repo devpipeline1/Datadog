@@ -1,15 +1,14 @@
-Install below packages
+✅ 1.Install below packages
 sudo yum install python3 python3-pip -y
 sudo yum install ansible -y
 
-Verify 
+✅ 2.Verify 
 
 which ansible-galaxy
 ansible-galaxy --version
 
 
-Create a ansible user on server
-
+✅ 3.Create a ansible user on server
  in Ansible, the server needs to push its key to the client so it can connect and run playbooks remotely
 
 sudo useradd -m -s /bin/bash ansible
@@ -18,69 +17,58 @@ sudo passwd ansible
 switch to ansible user
 su - ansible
 
-create rsa key-pair
+✅ 4.create rsa key-pair
 ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_ansible
 
 Client end setup
 ===============
 
-create a ansible user
+✅ 1.create a ansible user
 
 sudo useradd -m -s /bin/bash ansible
 sudo passwd ansible
 
-go to home directory and create .ssh directory 
+✅ 2.go to home directory and create .ssh directory 
 su - ansible
 mkdir -p /home/ansible/.ssh
 chmod 755 /home/ansible/.ssh
-create authorized_keys inside .ssh directory 
+✅ 3.create authorized_keys inside .ssh directory 
 touch /home/ansible/.ssh/authorized_keys
 chmod 644 /home/ansible/.ssh/authorized_keys
 
-copy the public key to from server to client (run below command from server, please update your client ip in below command)
+✅ 4.copy the public key to from server to client (run below command from server, please update your client ip in below command)
 ssh-copy-id -i ~/.ssh/id_ansible.pub ansible@<client-ip>
 if the above command not wokring, then
 copy /home/ansible/.ssh/id_ansible.pub from server and paste it on client end file /home/ansible/.ssh/authorized_keys
 
-for password less login (run this on client)
+✅ 5.make password less login (run this on client)
 echo 'ansible ALL=(ALL) NOPASSWD:ALL' | sudo tee /etc/sudoers.d/ansible
 sudo chmod 440 /etc/sudoers.d/ansible
 
-Make sure below 2 options should be uncommented on sshd_config file
-
+✅ 6.Make sure below 2 options should be uncommented on sshd_config file in client
 sudo vi /etc/ssh/sshd_config
 PubkeyAuthentication yes
 AuthorizedKeysFile      .ssh/authorized_keys
 
-
-Run below commands on server 
+======================
+Install ansible galaxy
+======================
 Collections are packaged bundles of roles, modules, plugins, and documentation that extend Ansible’s core functionality.
-su - ansible
-create requirement.yaml
+✅ 1.create requirement.yaml
 collections:
   - name: datadog.dd
   - name: ansible.windows
   - name: community.general    # only needed for openSUSE/SLES
 
+✅ 2.Run below commands on server 
+su - ansible
 ansible-galaxy collection install -r requirements.yml
 
-
-Create inventory.ini
-
+✅ 3.Create inventory.ini
 [linux]
-linux1 ansible_host=10.0.0.10 ansible_user=ubuntu ansible_become=yes
+linux1 ansible_host=13.232.236.97 ansible_user=ansible ansible_ssh_private_key_file=~/.ssh/id_ansible
 
-[windows]
-win1  ansible_host=10.0.0.20
-      ansible_user=Administrator
-      ansible_password='YourP@ssw0rd'
-      ansible_connection=winrm
-      ansible_winrm_scheme=https
-      ansible_winrm_transport=ntlm
-      ansible_winrm_server_cert_validation=ignore
-
-write playbook
-=============
+✅ 4.write playbook to install datadog agent on linux hosts
 ---
 - name: Install Datadog Agent on Linux hosts
   hosts: linux
@@ -99,15 +87,34 @@ write playbook
         datadog_apm_enabled: true
         datadog_process_agent_enabled: true
 
-- name: Install Datadog Agent on Windows hosts
-  hosts: windows
-  become:yes
-  gather_facts: no   # WinRM fact gathering can be slow
+✅ 5.Check connectivity
+ansible linux1 -m ping -i inventory.ini
+
+✅ 6.run playbook
+ansible-playbook   -i inventory.ini   datadog-agent.yaml   -e datadog_api_key=30fe754d4f6c6cc99b3641a1fda9d8b2
+
+if you want to keep your api_key securely then use ansible vault
+================================================================
+ansible-vault encrypt_string '30fe754d4f6c6cc99b3641a1fda9d8b2' --name datadog_api_key
+
+✅ 7.update yaml file
+---
+- name: Install Datadog Agent on Linux hosts
+  hosts: linux
+  become: yes
+  gather_facts: yes
 
   roles:
     - role: datadog.dd.agent
       vars:
-        datadog_api_key: "{{ datadog_api_key }}"
+        datadog_api_key: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          64326236396166626434633430636337373435663364653066623666393738663965383666356632
+          6331346239323864353465626537626363613133623137310a303862623263343966306364303164
+          66613863663930356137663734333465303436636536306364663734393663643934303338316538
+          6137353533393064620a346165313836346536623165636533313130393538666237383361383137
+          30313461303232373263663039303934396337323763656539303561306439383839643330373336
+          6364343033373736346462333765633863633936626564656439
         datadog_site: datadoghq.com
         datadog_tags:
           - env:production
@@ -116,10 +123,81 @@ write playbook
         datadog_apm_enabled: true
         datadog_process_agent_enabled: true
 
+✅ 8.run playbook
+cd /ansible
+ansible-playbook   -i inventory.ini   datadog-agent.yaml --ask-vault-pass
 
-execute playbook
+==================
+Deploy on windows
+==================
+Prep Your Windows Server (Client)
+===================================
+✅ 1. Enable WinRM (Remote Management)
+Run this in PowerShell as Administrator on the Windows server:
+# Enable WinRM
+winrm quickconfig -q
+# Allow basic authentication
+winrm set winrm/config/service/auth '@{Basic="true"}'
+# Allow unencrypted traffic (needed for basic transport)
+winrm set winrm/config/service '@{AllowUnencrypted="true"}'
+# Enable PowerShell Remoting
+Enable-PSRemoting -Force
 
-ansible-playbook \
-  -i inventory.ini \
-  datadog-agent.yml \
-  -e datadog_api_key=YOUR_DD_API_KEY
+✅ 2. Allow WinRM Through Firewall
+New-NetFirewallRule -Name "WinRM" -DisplayName "WinRM" -Protocol TCP -LocalPort 5985 -Action Allow
+
+✅ 3. Create a User for Ansible
+You can use the built-in Administrator account or create a new one:
+net user ansibleUser password@123 /add
+net localgroup Administrators ansibleUser /add
+
+✅ 3.update inventory.ini
+[linux]
+linux1 ansible_host=13.232.236.97 ansible_user=ansible ansible_ssh_private_key_file=~/.ssh/id_ansible
+
+[windows]
+win1  ansible_host=14.232.332.32
+      ansible_user=ansibleUser
+      ansible_password=password@123
+      ansible_connection=winrm
+      ansible_winrm_transport=basic
+      ansible_winrm_server_cert_validation=ignore
+
+✅ 4.Create playbook for windows on server
+vi /ansible/datadog-agent-windows.yaml
+---
+- name: Install Datadog Agent on Windows
+  hosts: windows
+  gather_facts: yes
+  tasks:
+    - name: Create C:\Temp directory
+      win_file:
+        path: C:\Temp
+        state: directory
+
+    - name: Download Datadog MSI installer
+      win_get_url:
+        url: "https://s3.amazonaws.com/ddagent-windows-stable/datadog-agent-7-latest.amd64.msi"
+        dest: "C:\\Temp\\datadog-agent.msi"
+
+    - name: Install Datadog Agent
+      win_package:
+        path: "C:\\Temp\\datadog-agent.msi"
+        arguments: "APIKEY={{ datadog_api_key }}"
+        product_id: "Datadog Agent"
+
+    - name: Ensure Datadog Agent is running
+      win_service:
+        name: "datadogagent"
+        start_mode: auto
+        state: started
+
+✅ 5.run below command on server end
+pip install "pywinrm>=0.3.0" requests
+
+✅ 6.Check windows server connectivity from ansible server
+ansible win1 -m win_ping -i inventory.ini
+
+✅ 7.execute playbook
+ansible-playbook   -i inventory.ini   datadog-agent-windows.yaml   -e datadog_api_key=30fe754d4f6c6cc99b3641a1fda9d8b2
+
