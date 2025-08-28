@@ -7,14 +7,6 @@ Verify
 which ansible-galaxy
 ansible-galaxy --version
 
-Collections are packaged bundles of roles, modules, plugins, and documentation that extend Ansible’s core functionality.
-create requirement.yaml
-collections:
-  - name: datadog.dd
-  - name: ansible.windows
-  - name: community.general    # only needed for openSUSE/SLES
-
-ansible-galaxy collection install -r requirements.yml
 
 Create a ansible user on server
 
@@ -61,6 +53,18 @@ PubkeyAuthentication yes
 AuthorizedKeysFile      .ssh/authorized_keys
 
 
+Run below commands on server 
+Collections are packaged bundles of roles, modules, plugins, and documentation that extend Ansible’s core functionality.
+su - ansible
+create requirement.yaml
+collections:
+  - name: datadog.dd
+  - name: ansible.windows
+  - name: community.general    # only needed for openSUSE/SLES
+
+ansible-galaxy collection install -r requirements.yml
+
+
 Create inventory.ini
 
 [linux]
@@ -80,6 +84,7 @@ write playbook
 ---
 - name: Install Datadog Agent on Linux hosts
   hosts: linux
+  become: yes
   gather_facts: yes
 
   roles:
@@ -96,6 +101,7 @@ write playbook
 
 - name: Install Datadog Agent on Windows hosts
   hosts: windows
+  become:yes
   gather_facts: no   # WinRM fact gathering can be slow
 
   roles:
