@@ -7,6 +7,7 @@ sudo yum install ansible -y
 which ansible-galaxy
 ansible-galaxy --version
 mkdir -p /ansible
+chmod 777 /ansible
 
 ✅ 3.Create a ansible user on server
  in Ansible, the server needs to push its key to the client so it can connect and run playbooks remotely
@@ -93,7 +94,7 @@ vi datadog-agent.yaml
 ansible linux1 -m ping -i inventory.ini
 
 ✅ 6.run playbook
-ansible-playbook   -i inventory.ini   datadog-agent.yaml   -e datadog_api_key=30fe754d4f6c6cc99b3641a1fda9d8b2
+ansible-playbook   -i inventory.ini   ddagent.yaml   -e datadog_api_key=e754d4f6c6c1a1fda9d82
 
 if you want to keep your api_key securely then use ansible vault
 ================================================================
@@ -153,7 +154,7 @@ You can use the built-in Administrator account or create a new one:
 net user ansibleUser password@123 /add
 net localgroup Administrators ansibleUser /add
 
-✅ 3.update inventory.ini
+✅ 3.update inventory.ini (Server end)
 [linux]
 linux1 ansible_host=13.232.236.97 ansible_user=ansible ansible_ssh_private_key_file=~/.ssh/id_ansible
 
