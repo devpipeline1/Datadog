@@ -26,3 +26,16 @@ logs:
 
 Enable the log collection in datadog_agent.yaml
 log_enabled: true
+
+
+
+net user testuser Password123! /add
+net user testuser /delete
+
+View security events
+Get-WinEvent -LogName Security -MaxEvents 10
+filter by event id
+
+Create event manually
+eventcreate /T INFORMATION /ID 1000 /L APPLICATION /D "Test event for monitoring"
+Get-WinEvent -FilterHashtable @{LogName='Security'; Id=4624}
