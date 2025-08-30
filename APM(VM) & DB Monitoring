@@ -1,6 +1,6 @@
 1.Install git and java
-     Yum install git
-     Yum install java-17
+     yum install git
+     yum install java-17
 
 2.Create a directory for project
 mkdir -p /myproject
@@ -115,6 +115,10 @@ to fix permission denied
 [root@ip-172-31-45-163 ~]# chmod 777 -R /root
 cat /var/lib/pgsql/15/data/logfile
 chmod 700 "/var/lib/pgsql/15/data"
+
+Stop and start the service if its running already 
+sudo -u postgres /usr/bin/pg_ctl -D /var/lib/pgsql/15/data -l /var/lib/pgsql/15/data/logfile stop
+
 [root@ip-172-31-45-163 ~]# sudo -u postgres /usr/bin/pg_ctl -D /var/lib/pgsql/15/data -l /var/lib/pgsql/15/data/logfile start
 waiting for server to start.... done
 server started
@@ -176,11 +180,33 @@ Update below file with below content
 [root@ip-172-31-45-163 spring-petclinic]# cat /myproject/spring-petclinic/src/main/resources/application-postgres.properties
 # database init, supports postgres too
 database=postgres
-spring.datasource.url=${POSTGRES_URL:jdbc:postgresql://localhost/petclinic}
+spring.datasource.url=${POSTGRES_URL:jdbc:postgresql:5432//localhost/petclinic}
 spring.datasource.username=${POSTGRES_USER:petclinic}
 spring.datasource.password=${POSTGRES_PASS:petclinic}
 # SQL is written to be idempotent so this is safe
 spring.sql.init.mode=always
+
+[root@ip-172-31-40-103 ~]# sudo -u postgres psql
+psql (15.13)
+Type "help" for help.
+
+postgres=# GRANT ALL ON SCHEMA public TO petclinic;
+GRANT
+
+postgres=# SELECT n.nspname AS schema,
+       r.rolname AS role,
+       has_schema_privilege(r.rolname, n.nspname, 'CREATE') AS can_create,
+       has_schema_privilege(r.rolname, n.nspname, 'USAGE') AS can_use
+FROM pg_namespace n
+JOIN pg_roles r ON r.rolname = 'petclinic'
+WHERE n.nspname = 'public';
+ schema |   role    | can_create | can_use
+--------+-----------+------------+---------
+ public | petclinic | t          | t
+(1 row)
+
+postgres=#
+
 
 
 [root@ip-172-31-45-163 target]# /usr/bin/java -javaagent:/myproject/spring-petclinic/dd-java-agent.jar   -Ddd.profiling.enabled=true   -XX:FlightRecorderOptions=stackdepth=256   -jar /myproject/spring-petclinic/target/spring-petclinic-3.5.0-SNAPSHOT.jar
