@@ -28,3 +28,5 @@ instances:
 
 chown dd-agent:dd-agent /etc/datadog-agent/checks.d/custom_test_count.py
 chown dd-agent:dd-agent -R /etc/datadog-agent/conf.d/custom_test_count.d
+
+Please make sure, dd-agent should have monitoring directory (/tmp) should atleast read permission
