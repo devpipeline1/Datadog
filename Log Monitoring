@@ -80,7 +80,7 @@ Mask Passwords in Datadog Logs
 ✅ 4. Apply to Specific Logs- Scope the rule to logs from a particular service, source, or tag (e.g., source:springboot or service:petclinic-app)
 ✅ 5. Save and Monitor- Once saved, Datadog will automatically scan incoming logs and apply the masking in real time.
 
-Example Before & AfterBefore:{
+Example Before & After:{
   "username": "admin",
   "password": "supersecret"
 }
