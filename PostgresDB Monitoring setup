@@ -115,5 +115,4 @@ This will spin up MySQL and other services automatically.
 🔹 6. Verify the App
 Visit http://localhost:8080 and confirm that data persists across restarts.
 
-Would you like help setting up Datadog monitoring for this MySQL instance now that it’s running?
 
