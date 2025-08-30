@@ -1,17 +1,17 @@
 Grafana Installation:
-Got to - https://grafana.com/grafana/download
+✅Go to - https://grafana.com/grafana/download
 
-Run below command to install Grafana-server
+✅Run below command to install Grafana-server
 sudo yum install -y https://dl.grafana.com/enterprise/release/grafana-enterprise-12.0.1-1.x86_64.rpm
 
-Start and enable Grafana service
+✅Start and enable Grafana service
 systemctl start grafana-server.service
 systemctl status grafana-server.service
 systemctl enable grafana-server.service
-Main config file - /etc/grafana/grafana.ini
-access Grafana via <Grafana server IP:3000>
+✅Main config file - /etc/grafana/grafana.ini
+✅access Grafana via <Grafana server IP:3000>
 
-Prerequisites
+✅Prerequisites
 Datadog Account with:
 API Key
 Application Key
@@ -19,18 +19,18 @@ Grafana installed (cloud or self-hosted).
 Datadog’s API endpoints:
 https://api.datadoghq.com
 
-On grafana server install below plugin
+✅On grafana server install below plugin
 ======================================
 grafana-cli plugins install grafana-datadog-datasource
 sudo systemctl restart grafana-server
 
 In Grafana web console:
-Go to Data Sources
-Click Add data source
-Select Datadog
-Enter:
+✅1.Go to Data Sources
+✅2.Click Add data source
+✅3.Select Datadog
+✅4.Enter:
 API Key – from Datadog
 Application Key – from Datadog
 API URL: https://api.datadoghq.com (default) or appropriate for your region
 Optional: Site (datadoghq.com, datadoghq.eu, etc.)
-Click Save & Test
+✅5.Click Save & Test
