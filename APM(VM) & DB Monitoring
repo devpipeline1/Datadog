@@ -35,7 +35,11 @@ nohup java -javaagent:/myproject/spring-petclinic/dd-java-agent.jar \
   -Ddd.env=prod \
   -jar /myproject/spring-petclinic/target/spring-petclinic-3.5.0-SNAPSHOT.jar > /myproject/spring-petclinic/log/petclinic.log 2>&1 &
 
+create log directory 
+mkdir -p /myproject/spring-petclinic/log/
 
+set permission 
+chmod +x /myproject/spring-petclinic/start.sh
 ==========================================
 Create a service for petclinic application
 ==========================================
