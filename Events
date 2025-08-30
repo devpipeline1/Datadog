@@ -3,29 +3,26 @@ get the channel details
 Get-WinEvent -ListLog * | Select-Object LogName, RecordCount | Format-Table -AutoSize
 
 C -->Program Data -->Datadog-->conf.d-->win32_event_log.d	  
-instance:
+instances:
   - path: Application
   - path: Security
 
 logs:
-  - type: windows_event
-    channel_path: Security
-    source: Security
-    service: windows-security
-    tags:
-      - env:dev
-      - src:os
+    - type: windows_event
+      channel_path: "Security"
+      source: Server
+      service: Security
+      tags: [env:dev, src:os]
 
-  - type: windows_event
-    channel_path: Application
-    source: myapp
-    service: myapp-service
-    tags:
-      - env:dev
-      - srv:app
+    - type: windows_event
+      channel_path: "Application"
+      source: myapp
+      service: myapp-service
+      tags: [env:dev, src:app]
+
 
 Enable the log collection in datadog_agent.yaml
-log_enabled: true
+logs_enabled: true
 
 
 
