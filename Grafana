@@ -10,3 +10,27 @@ systemctl status grafana-server.service
 systemctl enable grafana-server.service
 Main config file - /etc/grafana/grafana.ini
 access Grafana via <Grafana server IP:3000>
+
+Prerequisites
+Datadog Account with:
+API Key
+Application Key
+Grafana installed (cloud or self-hosted).
+Datadog’s API endpoints:
+https://api.datadoghq.com
+
+On grafana server install below plugin
+======================================
+grafana-cli plugins install grafana-datadog-datasource
+sudo systemctl restart grafana-server
+
+In Grafana web console:
+Go to Data Sources
+Click Add data source
+Select Datadog
+Enter:
+API Key – from Datadog
+Application Key – from Datadog
+API URL: https://api.datadoghq.com (default) or appropriate for your region
+Optional: Site (datadoghq.com, datadoghq.eu, etc.)
+Click Save & Test
