@@ -1,0 +1,12 @@
+Grafana Installation:
+Got to - https://grafana.com/grafana/download
+
+Run below command to install Grafana-server
+sudo yum install -y https://dl.grafana.com/enterprise/release/grafana-enterprise-12.0.1-1.x86_64.rpm
+
+Start and enable Grafana service
+systemctl start grafana-server.service
+systemctl status grafana-server.service
+systemctl enable grafana-server.service
+Main config file - /etc/grafana/grafana.ini
+access Grafana via <Grafana server IP:3000>
