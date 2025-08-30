@@ -17,7 +17,7 @@ class CustomTestCount(AgentCheck):
 
         print(count)
 
-        self.count("file.modified.count", count, tags=["env:local", "app:myapp“, “dir:bankdetails”])
+        self.count("file.modified.count", count, tags=["env:local", "app:myapp", "dir:bankdetails"])
 
 =====================================================================
 /etc/datadog-agent/conf.d/custom_test_count.d/custom_test_count.yaml
