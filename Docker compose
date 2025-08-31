@@ -29,7 +29,10 @@ source ~/.base
 4.clone easytrade git repo (run this command from /myproject)
  git clone https://github.com/Dynatrace/easytrade.git
 
-5.Run compose.yaml
+5.go to easytrade directory
+cd /myproject/easytrade
+
+6.Run compose.yaml
 docker-compose -f compose.yaml up -d
 
 access application via browser <publicip:80>
