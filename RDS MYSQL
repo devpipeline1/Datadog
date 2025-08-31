@@ -1,0 +1,56 @@
+To interact with an Amazon RDS MySQL database from your client server, you'll need to follow a few key steps—from setup to execution. Here's a complete walkthrough:
+
+Step 1: Create an RDS MySQL Instance
+You can do this via the AWS Console:
+- Log in to AWS Console and go to RDS.
+- Click Create database.
+- Choose MySQL as the engine.
+- Select a template (e.g., Free Tier).
+- Set DB instance identifier, master username, and password.
+- Under Connectivity, make sure to:
+- Enable public access if you want to connect from outside the VPC.
+- Choose the correct VPC security group.
+- Click Create database and wait for it to become available.
+
+
+To interact with an Amazon RDS MySQL database from your client server, you'll need to follow a few key steps—from setup to execution. Here's a complete walkthrough:
+Step 2: Create a Database and User
+Once your RDS instance is up, connect using a MySQL client from your server:
+mysql -u masteruser -h your-rds-endpoint.amazonaws.com -P 3306 -p
+Then run:
+-- Create a new database
+CREATE DATABASE myapp_db;
+-- Create a new user
+CREATE USER 'appuser'@'%' IDENTIFIED BY 'StrongPassword123';
+-- Grant privileges
+GRANT ALL PRIVILEGES ON myapp_db.* TO 'appuser'@'%';
+-- Apply changes
+FLUSH PRIVILEGES;
+
+Step 3: Connect from Your Client Server
+Install MySQL client to access RDS endpoint 
+sudo yum install mysql    #for redhat linux
+sudo yum install mariadb  #for amazon linux
+
+if its not working the please follow below steps
+
+sudo dnf install wget -y
+wget https://dev.mysql.com/get/mysql80-community-release-el9-1.noarch.rpm
+sudo dnf install mysql80-community-release-el9-1.noarch.rpm -y
+
+sudo rpm --import https://repo.mysql.com/RPM-GPG-KEY-mysql-2023
+
+sudo dnf install mysql-community-client -y
+             or
+sudo dnf install mysql-community-client --nogpgcheck -y
+
+mysql --version
+
+connect to the server
+mysql -u appuser -h your-rds-endpoint.amazonaws.com -P 3306 -p
+
+Step 4: Run queries
+USE myapp_db;
+
+-- Example query
+SELECT * FROM users;
