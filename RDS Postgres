@@ -1,0 +1,42 @@
+# Update packages
+sudo yum update -y
+
+# Install PostgreSQL client (version 15 shown; change if needed)
+sudo amazon-linux-extras enable postgresql15
+sudo yum install -y postgresql15
+
+
+psql -h apmdt.cdiggq2s868n.ap-south-1.rds.amazonaws.com -U postgres -d postgres -p 5432
+psql -d postgres -c "select version();"
+
+exit
+export PGHOST="mydb.abc123xyz.ap-south-1.rds.amazonaws.com"
+export PGPORT=5432
+export PGUSER="postgres"          # or your master/privileged user
+export PGPASSWORD="YOUR_PASSWORD"
+psql -d postgres -c "select version();"
+psql -d postgres -c "CREATE DATABASE demo_db;"
+
+psql -d demo_db <<'SQL'
+CREATE TABLE IF NOT EXISTS users (
+  id          bigserial PRIMARY KEY,
+  email       text UNIQUE NOT NULL,
+  full_name   text NOT NULL,
+  created_at  timestamptz NOT NULL DEFAULT now()
+);
+
+INSERT INTO users (email, full_name) VALUES
+('alice@example.com','Alice A.'),
+('bob@example.com','Bob B.'),
+('carol@example.com','Carol C.')
+ON CONFLICT (email) DO NOTHING;
+
+cat >/tmp/users.csv <<'CSV'
+email,full_name,created_at
+dave@example.com,Dave D.,2025-08-24T10:00:00Z
+eve@example.com,Eve E.,2025-08-24T10:05:00Z
+frank@example.com,Frank F.,2025-08-24T10:10:00Z
+CSV
+
+psql -d demo_db -c "\copy users(email,full_name,created_at) FROM '/tmp/users.csv' WITH (FORMAT csv, HEADER true)"
+cat >/tmp/users.csv <<'CSV'
