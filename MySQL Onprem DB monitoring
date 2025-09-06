@@ -68,9 +68,6 @@ CREATE USER 'petclinic'@'%' IDENTIFIED BY 'your_secure_password';
 GRANT ALL PRIVILEGES ON petclinic.* TO 'petclinic'@'%';
 FLUSH PRIVILEGES;
 
-./mvnw clean install
-./mvnw spring-boot:run -Dspring-boot.run.profiles=mysql
-
 
 [root@ip-172-31-46-95 mysql]# cat /myproject/spring-petclinic/src/main/resources/application-mysql.properties
 # database init, supports mysql too
@@ -80,6 +77,10 @@ spring.datasource.username=${MYSQL_USER:petclinic}
 spring.datasource.password=${MYSQL_PASS:Petclinic@123}
 # SQL is written to be idempotent so this is safe
 spring.sql.init.mode=always
+
+systemctl stop petclinic
+./mvnw clean install
+./mvnw spring-boot:run -Dspring-boot.run.profiles=mysql
 
 [Unit]
 Description=Spring PetClinic Application with Datadog Java Agent
@@ -208,8 +209,8 @@ open /etc/my.cnf and update below
   slow_query_log_file = /var/log/mysql/mysql_slow.log
   long_query_time = 2
 
-restart mysql service
-systemctl restart mysql
+restart mysqld service
+systemctl restart mysqld
 
 Update log configuration on datadog conf.d folder for mysql /etc/datadog-agent/conf.d/mysql.d/conf.yaml
 
