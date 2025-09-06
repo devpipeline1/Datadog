@@ -68,16 +68,18 @@ CREATE USER 'petclinic'@'%' IDENTIFIED BY 'your_secure_password';
 GRANT ALL PRIVILEGES ON petclinic.* TO 'petclinic'@'%';
 FLUSH PRIVILEGES;
 
+./mvnw clean install
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=mysql
 
-[root@ip-172-31-37-248 ~]# cat /myproject/spring-petclinic/src/main/resources/application-mysql.properties
+
+[root@ip-172-31-46-95 mysql]# cat /myproject/spring-petclinic/src/main/resources/application-mysql.properties
+# database init, supports mysql too
 database=mysql
-spring.datasource.url=jdbc:mysql://127.0.0.1:3306/petclinic
-spring.datasource.username=petclinic
-spring.datasource.password=1^23456
-spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-spring.jpa.hibernate.ddl-auto=update
-spring.sql.init.mode=never
+spring.datasource.url=${MYSQL_URL:jdbc:mysql://127.0.0.1:3306/petclinic}
+spring.datasource.username=${MYSQL_USER:petclinic}
+spring.datasource.password=${MYSQL_PASS:Petclinic@123}
+# SQL is written to be idempotent so this is safe
+spring.sql.init.mode=always
 
 [Unit]
 Description=Spring PetClinic Application with Datadog Java Agent
@@ -101,6 +103,8 @@ WantedBy=multi-user.target
 Datadog needs a read-only user to collect metrics.
 mssql> CREATE USER 'datadog'@'%' IDENTIFIED BY 'Data@123';
 
+Verify the user was created successfully using the following commands
+
 [root@ip-172-31-37-248 spring-petclinic]# mysql -u datadog --password=Data@123 -e "show status" | \
 grep Uptime && echo -e "\033[0;32mMySQL user - OK\033[0m" || \
 echo -e "\033[0;31mCannot connect to MySQL\033[0m"
@@ -108,6 +112,8 @@ mysql: [Warning] Using a password on the command line interface can be insecure.
 Uptime  4633
 Uptime_since_flush_status       4633
 MySQL user - OK
+
+grant replication client and set max_user_connections with the following commands:
 
 mysql> GRANT REPLICATION CLIENT ON *.* TO 'datadog'@'%';
 Query OK, 0 rows affected (0.01 sec)
@@ -118,6 +124,7 @@ Query OK, 0 rows affected (0.01 sec)
 mysql> GRANT PROCESS ON *.* TO 'datadog'@'%';
 Query OK, 0 rows affected (0.00 sec)
 
+Verify the replication client
 
 [root@ip-172-31-37-248 spring-petclinic]# mysql -u datadog --password=Data@123 -e "show slave status" && \
 echo -e "\033[0;32mMySQL grant - OK\033[0m" || \
@@ -125,6 +132,20 @@ echo -e "\033[0;31mMissing REPLICATION CLIENT grant\033[0m"
 mysql: [Warning] Using a password on the command line interface can be insecure.
 MySQL grant - OK
 
+
+[root@ip-172-31-46-95 spring-petclinic]# mysql -u root -p
+Enter password:
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 27
+Server version: 8.0.43 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2025, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
 
 mysql> show databases like 'performance_schema';
 +-------------------------------+
@@ -134,11 +155,8 @@ mysql> show databases like 'performance_schema';
 +-------------------------------+
 1 row in set (0.00 sec)
 
-mysql>
-
-
 mysql> GRANT SELECT ON performance_schema.* TO 'datadog'@'%';
-Query OK, 0 rows affected (0.00 sec)
+Query OK, 0 rows affected (0.01 sec)
 
 mysql> GRANT SELECT ON mysql.innodb_index_stats TO 'datadog'@'%';
 Query OK, 0 rows affected (0.01 sec)
@@ -166,6 +184,88 @@ sudo systemctl restart datadog-agent
 •	Navigate to Integrations > MySQL
 
 
+Update log configuration
+
+create /var/log/mysql director and log files
+mkdir -p /var/log/mysql
+touch /var/log/mysql/mysql.log
+touch /var/log/mysql/mysql_error.log
+touch /var/log/mysql/mysql_slow.log
+provide read access to dd-agent
+chown mysql:mysql -R /var/log/mysql
+chmod 755 -R /var/log/mysql
+
+open /etc/my.cnf and update below
+
+  [mysqld_safe]
+  log_error = /var/log/mysql/mysql_error.log
+
+  [mysqld]
+  general_log = on
+  general_log_file = /var/log/mysql/mysql.log
+  log_error = /var/log/mysql/mysql_error.log
+  slow_query_log = on
+  slow_query_log_file = /var/log/mysql/mysql_slow.log
+  long_query_time = 2
+
+restart mysql service
+systemctl restart mysql
+
+Update log configuration on datadog conf.d folder for mysql /etc/datadog-agent/conf.d/mysql.d/conf.yaml
+
+instances:
+  - host: localhost
+    username: datadog
+    password: 'Data@123'
+
+    port: 3306
+    options:
+      replication: false
+      galera_cluster: true
+      extra_status_metrics: true
+      extra_innodb_metrics: true
+      schema_size_metrics: false
+      disable_innodb_metrics: false
+
+logs:
+  - type: file
+    path: "/var/log/mysql/mysql_error.log"
+    source: mysql
+    service: "mysql_error"
+
+  - type: file
+    path: "/var/log/mysql/mysql_slow.log"
+    source: mysql
+    service: "mysql_slow"
+    log_processing_rules:
+      - type: multi_line
+        name: new_slow_query_log_entry
+        pattern: "# Time:"
+        # If mysqld was started with `--log-short-format`, use:
+        # pattern: "# Query_time:"
+        # If using mysql version <5.7, use the following rules instead:
+        # - type: multi_line
+        #   name: new_slow_query_log_entry
+        #   pattern: "# Time|# User@Host"
+        # - type: exclude_at_match
+        #   name: exclude_timestamp_only_line
+        #   pattern: "# Time:"
+
+  - type: file
+    path: "/var/log/mysql/mysql.log"
+    source: mysql
+    service: "mysql_general"
+
+
+enable log monitroing in datadog.yaml
+logs_enabled: true
+
+
+after this please restart datadog agent, go and check log collection in mysql dashboard
+
+Error log sample:
+echo "2025-09-06T07:22:15.124678Z 0 [ERROR] Can't open the mysql.plugin table. Please run mysql_upgrade to create it." >> /var/log/mysql/mysql_error.log
+echo "2025-09-06T07:22:15.124678Z 0 Can't open the mysql.plugin table. Please run mysql_upgrade to create it." >> /var/log/mysql/mysql.log
 
 add custom queries:
 
