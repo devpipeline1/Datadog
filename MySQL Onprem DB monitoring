@@ -1,4 +1,4 @@
-Step 1: Install MySQL Server on Amazon Linux
+✅Step 1: Install MySQL Server on Amazon Linux
 For Amazon Linux 2 or 2023:
 1.	Enable EPEL and MySQL repo
 sudo dnf install wget -y
@@ -15,7 +15,6 @@ sudo grep 'temporary password' /var/log/mysqld.log
 5.	Secure MySQL Installation
 sudo mysql_secure_installation 
 [root@ip-172-31-37-248 ~]# sudo mysql_secure_installation
-
 Securing the MySQL server deployment.
 Enter password for user root:
 The existing password for the user account root has expired. Please set a new password.
@@ -54,17 +53,17 @@ Success.
 All done!
 [root@ip-172-31-37-248 ~]#
 
-Log in as root:
+✅step 2: Log in as root:
 mysql -u root -p
 
 
-allow a connection from any host
+✅ Step 3: Create Database and user for Petclinic project
 CREATE DATABASE petclinic;
 CREATE USER 'petclinic'@'%' IDENTIFIED BY 'your_secure_password';
 GRANT ALL PRIVILEGES ON petclinic.* TO 'petclinic'@'%';
 FLUSH PRIVILEGES;
 
-
+✅ step 3: Update application property
 [root@ip-172-31-46-95 mysql]# cat /myproject/spring-petclinic/src/main/resources/application-mysql.properties
 # database init, supports mysql too
 database=mysql
@@ -74,43 +73,19 @@ spring.datasource.password=${MYSQL_PASS:Petclinic@123}
 # SQL is written to be idempotent so this is safe
 spring.sql.init.mode=always
 
+✅ step 4: stop application and inject mysql profile into target code
 systemctl stop petclinic
 ./mvnw clean install
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=mysql
 
-
-[Unit]
-Description=Spring PetClinic Application with Datadog Java Agent
-After=network.target
-
-[Service]
-Type=simple
-User=dd-agent
-WorkingDirectory=/myproject/spring-petclinic
-ExecStart=/usr/bin/java \
-  -javaagent:/myproject/spring-petclinic/dd-java-agent.jar \
-  -Ddd.profiling.enabled=true \
-  -XX:FlightRecorderOptions=stackdepth=256 \
-  -Ddd.logs.injection=true \
-  -Ddd.trace.sample.rate=1 \
-  -Ddd.service=mynew \
-  -Ddd.env=prod \
-  -jar /myproject/spring-petclinic/target/spring-petclinic-3.5.0-SNAPSHOT.jar
-Restart=always
-RestartSec=10
-StandardOutput=file:/myproject/spring-petclinic/log/petclinic.log
-StandardError=file:/myproject/spring-petclinic/log/petclinic-error.log
-
-[Install]
-WantedBy=multi-user.target
-
-•  Follow prompts to set a new root password and remove insecure defaults. 
- Step 2: Create Datadog Monitoring User in MySQL
+============================
+Integrate MySQL into Datadog
+============================
+ ✅ Step 1: Create Datadog Monitoring User in MySQL
 Datadog needs a read-only user to collect metrics.
 mssql> CREATE USER 'datadog'@'%' IDENTIFIED BY 'Data@123';
 
-Verify the user was created successfully using the following commands
-
+✅ step 2: Verify the user was created successfully using the following commands
 [root@ip-172-31-37-248 spring-petclinic]# mysql -u datadog --password=Data@123 -e "show status" | \
 grep Uptime && echo -e "\033[0;32mMySQL user - OK\033[0m" || \
 echo -e "\033[0;31mCannot connect to MySQL\033[0m"
@@ -119,7 +94,7 @@ Uptime  4633
 Uptime_since_flush_status       4633
 MySQL user - OK
 
-grant replication client and set max_user_connections with the following commands:
+✅ step 3: grant replication client and set max_user_connections with the following commands:
 
 mysql> GRANT REPLICATION CLIENT ON *.* TO 'datadog'@'%';
 Query OK, 0 rows affected (0.01 sec)
@@ -130,7 +105,7 @@ Query OK, 0 rows affected (0.01 sec)
 mysql> GRANT PROCESS ON *.* TO 'datadog'@'%';
 Query OK, 0 rows affected (0.00 sec)
 
-Verify the replication client
+✅ step 4: Verify the replication client
 
 [root@ip-172-31-37-248 spring-petclinic]# mysql -u datadog --password=Data@123 -e "show slave status" && \
 echo -e "\033[0;32mMySQL grant - OK\033[0m" || \
@@ -138,7 +113,7 @@ echo -e "\033[0;31mMissing REPLICATION CLIENT grant\033[0m"
 mysql: [Warning] Using a password on the command line interface can be insecure.
 MySQL grant - OK
 
-
+✅ step 5: Check and assign performance schema to Datadog user
 [root@ip-172-31-46-95 spring-petclinic]# mysql -u root -p
 Enter password:
 Welcome to the MySQL monitor.  Commands end with ; or \g.
@@ -167,7 +142,7 @@ Query OK, 0 rows affected (0.01 sec)
 mysql> GRANT SELECT ON mysql.innodb_index_stats TO 'datadog'@'%';
 Query OK, 0 rows affected (0.01 sec)
 
- Step 3: Configure MySQL Integration
+✅ Step 6: Configure MySQL Integration
 Edit the MySQL config file for Datadog:
 sudo vi /etc/datadog-agent/conf.d/mysql.d/conf.yaml 
 instances:
@@ -183,25 +158,17 @@ instances:
       extra_innodb_metrics: true
       schema_size_metrics: false
       disable_innodb_metrics: false
-
+✅ step 7: Restart the agent
 sudo systemctl restart datadog-agent 
- Step 5: Verify in Datadog
+✅ Step 8: Verify in Datadog
+. Install MySQL plugin on Datadog portal
 •	Go to Datadog Dashboard
 •	Navigate to Integrations > MySQL
 
-
-Update log configuration
-
-create /var/log/mysql director and log files
-mkdir -p /var/log/mysql
-touch /var/log/mysql/mysql.log
-touch /var/log/mysql/mysql_error.log
-touch /var/log/mysql/mysql_slow.log
-provide read access to dd-agent
-chown mysql:mysql -R /var/log/mysql
-chmod 755 -R /var/log/mysql
-
-open /etc/my.cnf and update below
+==================
+log configuration
+==================
+✅ Step 1: open /etc/my.cnf and update below
 
   [mysqld_safe]
   log_error = /var/log/mysql/mysql_error.log
@@ -214,10 +181,19 @@ open /etc/my.cnf and update below
   slow_query_log_file = /var/log/mysql/mysql_slow.log
   long_query_time = 2
 
-restart mysqld service
+✅ Step 2: create /var/log/mysql director and log files
+mkdir -p /var/log/mysql
+touch /var/log/mysql/mysql.log
+touch /var/log/mysql/mysql_error.log
+touch /var/log/mysql/mysql_slow.log
+provide read access to dd-agent
+chown mysql:mysql -R /var/log/mysql
+chmod 755 -R /var/log/mysql
+
+✅ Step 3: restart mysqld service
 systemctl restart mysqld
 
-Update log configuration on datadog conf.d folder for mysql /etc/datadog-agent/conf.d/mysql.d/conf.yaml
+✅Step 4: Update log configuration on datadog conf.d folder for mysql /etc/datadog-agent/conf.d/mysql.d/conf.yaml
 
 instances:
   - host: localhost
@@ -262,12 +238,13 @@ logs:
     source: mysql
     service: "mysql_general"
 
-===========================================================================
-enable log monitroing in datadog.yaml
+✅ Step 5: enable log monitroing in datadog.yaml
 logs_enabled: true
 
 
-after this please restart datadog agent, go and check log collection in mysql dashboard
+✅ Step 6: after this please restart datadog agent, go and check log collection in mysql dashboard
+
+
 ============================================================================
 Error log sample:
 echo "2025-09-06T07:22:15.124678Z 0 [ERROR] Can't open the mysql.plugin table. Please run mysql_upgrade to create it." >> /var/log/mysql/mysql_error.log
@@ -282,21 +259,16 @@ instances:
     pass: "your_password"
     port: 3306
     custom_queries:
-      - query: "SELECT COUNT(*) AS user_count FROM demo_db.users;"
-        columns:
-          - name: demo_db.users.user_count
-            type: gauge
-
-    custom_queries:
       - query: SELECT COUNT(*) FROM INFORMATION_SCHEMA.PROCESSLIST WHERE COMMAND != 'Sleep'
         columns:
-          - name: mysql.ccustom.active_connections
+          - name: mysql.custom.active_connections
             type: gauge
         tags:
           - env:prod
           - db:your_database
 ============================================================
 Monitor slow quries
+------------------
 - query: SELECT COUNT(*) FROM INFORMATION_SCHEMA.PROCESSLIST WHERE TIME > 5 AND COMMAND = 'Query'
   columns:
     - name: mysql.slow_queries
@@ -305,9 +277,17 @@ Monitor slow quries
     - env:prod
 
 Error count from log table
+--------------------------
 - query: SELECT COUNT(*) FROM your_database.error_logs WHERE error_level = 'critical' AND timestamp > NOW() - INTERVAL 1 HOUR
   columns:
     - name: myapp.errors.critical_hourly
       type: count
   tags:
     - severity:critical
+
+Usercount
+---------
+      - query: "SELECT COUNT(*) AS user_count FROM demo_db.users;"
+        columns:
+          - name: demo_db.users.user_count
+            type: gauge
