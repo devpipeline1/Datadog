@@ -34,12 +34,28 @@ ON CONFLICT (email) DO NOTHING;
 \q
 SQL
 
-cat >/tmp/users.csv <<'CSV'
+cat > /tmp/users.csv <<'CSV'
 email,full_name,created_at
-dave@example.com,Dave D.,2025-08-24T10:00:00Z
-eve@example.com,Eve E.,2025-08-24T10:05:00Z
-frank@example.com,Frank F.,2025-08-24T10:10:00Z
+alice@example.com,Alice A.,2023-01-01T10:00:00Z
+bob@example.com,Bob B.,2023-01-02T11:00:00Z
+carol@example.com,Carol C.,2023-01-03T12:00:00Z
 CSV
 
 psql -d demo_db -c "\copy users(email,full_name,created_at) FROM '/tmp/users.csv' WITH (FORMAT csv, HEADER true)"
-cat >/tmp/users.csv <<'CSV'
+postgres=> SELECT * FROM users;
+
+
+1.Bulk Insert Many Row
+INSERT INTO users (email, full_name)
+SELECT 
+  'user' || i || '@example.com',
+  'User ' || i
+FROM generate_series(1, 10000) AS s(i);
+
+2.Run heavy read queries
+SELECT * FROM users ORDER BY created_at DESC LIMIT 100;
+
+3.Update Many Rows
+UPDATE users 
+SET full_name = full_name || ' [updated]' 
+WHERE id % 100 = 0;
