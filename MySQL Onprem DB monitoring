@@ -57,12 +57,8 @@ All done!
 Log in as root:
 mysql -u root -p
 
-Create a user for localhost
-CREATE USER 'petclinic'@'localhost' IDENTIFIED BY 'your_secure_password';
-GRANT ALL PRIVILEGES ON petclinic.* TO 'petclinic'@'localhost';
-FLUSH PRIVILEGES;
 
-Or allow a connection from any host
+allow a connection from any host
 CREATE DATABASE petclinic;
 CREATE USER 'petclinic'@'%' IDENTIFIED BY 'your_secure_password';
 GRANT ALL PRIVILEGES ON petclinic.* TO 'petclinic'@'%';
@@ -82,6 +78,7 @@ systemctl stop petclinic
 ./mvnw clean install
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=mysql
 
+
 [Unit]
 Description=Spring PetClinic Application with Datadog Java Agent
 After=network.target
@@ -90,8 +87,16 @@ After=network.target
 Type=simple
 User=dd-agent
 WorkingDirectory=/myproject/spring-petclinic
-ExecStart=/usr/bin/java -javaagent:/myproject/spring-petclinic/dd-java-agent.jar -Ddd.profiling.enabled=true -XX:FlightRecorderOptions=stackdepth=256 -Ddd.logs.injection=true -Ddd.trace.sample.rate=1 -Ddd.service=mynew -Ddd.env=prod -jar /myproject/spring-petclinic/target/spring-petclinic-3.5.0-SNAPSHOT.jar --spring.profiles.active=mysql
-Restart=no
+ExecStart=/usr/bin/java \
+  -javaagent:/myproject/spring-petclinic/dd-java-agent.jar \
+  -Ddd.profiling.enabled=true \
+  -XX:FlightRecorderOptions=stackdepth=256 \
+  -Ddd.logs.injection=true \
+  -Ddd.trace.sample.rate=1 \
+  -Ddd.service=mynew \
+  -Ddd.env=prod \
+  -jar /myproject/spring-petclinic/target/spring-petclinic-3.5.0-SNAPSHOT.jar
+Restart=always
 RestartSec=10
 StandardOutput=file:/myproject/spring-petclinic/log/petclinic.log
 StandardError=file:/myproject/spring-petclinic/log/petclinic-error.log
@@ -257,36 +262,40 @@ logs:
     source: mysql
     service: "mysql_general"
 
-
+===========================================================================
 enable log monitroing in datadog.yaml
 logs_enabled: true
 
 
 after this please restart datadog agent, go and check log collection in mysql dashboard
-
+============================================================================
 Error log sample:
 echo "2025-09-06T07:22:15.124678Z 0 [ERROR] Can't open the mysql.plugin table. Please run mysql_upgrade to create it." >> /var/log/mysql/mysql_error.log
 echo "2025-09-06T07:22:15.124678Z 0 Can't open the mysql.plugin table. Please run mysql_upgrade to create it." >> /var/log/mysql/mysql.log
-
+========================================================================
 add custom queries:
+init_config:
+
+instances:
+  - server: "localhost"
+    user: "datadog"
+    pass: "your_password"
+    port: 3306
+    custom_queries:
+      - query: "SELECT COUNT(*) AS user_count FROM demo_db.users;"
+        columns:
+          - name: demo_db.users.user_count
+            type: gauge
 
     custom_queries:
-      - query: SELECT COUNT(*) FROM your_database.your_table WHERE status = 'error'
+      - query: SELECT COUNT(*) FROM INFORMATION_SCHEMA.PROCESSLIST WHERE COMMAND != 'Sleep'
         columns:
-          - name: myapp.db.error_count
+          - name: mysql.ccustom.active_connections
             type: gauge
         tags:
           - env:prod
           - db:your_database
-
- Track Number of Active Connections
-      - query: SELECT COUNT(*) FROM INFORMATION_SCHEMA.PROCESSLIST WHERE COMMAND != 'Sleep'
-  columns:
-    - name: mysql.active_connections
-      type: gauge
-  tags:
-    - env:prod
-
+============================================================
 Monitor slow quries
 - query: SELECT COUNT(*) FROM INFORMATION_SCHEMA.PROCESSLIST WHERE TIME > 5 AND COMMAND = 'Query'
   columns:
@@ -296,7 +305,6 @@ Monitor slow quries
     - env:prod
 
 Error count from log table
-
 - query: SELECT COUNT(*) FROM your_database.error_logs WHERE error_level = 'critical' AND timestamp > NOW() - INTERVAL 1 HOUR
   columns:
     - name: myapp.errors.critical_hourly
