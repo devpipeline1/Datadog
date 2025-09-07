@@ -17,7 +17,7 @@ export PGPASSWORD="YOUR_PASSWORD"
 psql -d postgres -c "select version();"
 psql -d postgres -c "CREATE DATABASE demo_db;"
 
-psql -d demo_db <<'SQL'
+psql -v ON_ERROR_STOP=1 -d demo_db <<'SQL'
 CREATE TABLE IF NOT EXISTS users (
   id          bigserial PRIMARY KEY,
   email       text UNIQUE NOT NULL,
@@ -30,6 +30,9 @@ INSERT INTO users (email, full_name) VALUES
 ('bob@example.com','Bob B.'),
 ('carol@example.com','Carol C.')
 ON CONFLICT (email) DO NOTHING;
+
+\q
+SQL
 
 cat >/tmp/users.csv <<'CSV'
 email,full_name,created_at
