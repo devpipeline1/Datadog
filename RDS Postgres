@@ -10,7 +10,7 @@ psql -h apmdt.cdiggq2s868n.ap-south-1.rds.amazonaws.com -U postgres -d postgres 
 psql -d postgres -c "select version();"
 
 exit
-export PGHOST="mydb.abc123xyz.ap-south-1.rds.amazonaws.com"
+export PGHOST="apmdt.cdiggq2s868n.ap-south-1.rds.amazonaws.com"
 export PGPORT=5432
 export PGUSER="postgres"          # or your master/privileged user
 export PGPASSWORD="YOUR_PASSWORD"
