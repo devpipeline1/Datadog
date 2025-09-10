@@ -1,16 +1,16 @@
-Observability
+✅Observability
 What is the difference between observability and monitoring?
 Explain the difference between logs, metrics, and traces ?
 How do metrics, logs, traces, and events work together in an observability strategy?
 Why is event correlation important in observability?
 
-Datadog
+✅Datadog
 What is Datadog and how does it work?
 Datadog Agent is written in which Language? Ans: GO language
 What is the name of the of Datadog config file and where its located on linux and windows ?
 
 
-Infrastructure Monitoring – Linux & Windows
+✅Infrastructure Monitoring – Linux & Windows
 What is used for Infra Monitoring ?
 Command “datadog-agent config” is used for ? Ans:to check datadog agent config
 What is the port number of Datadog Agent Manager on Windows ? Ans: 5002
@@ -24,7 +24,7 @@ How do host maps and live process monitoring help in infrastructure monitoring?
 How will you uninstall datadong agent ?
 
 
-Metrics, Tags, and Dashboards
+✅Metrics, Tags, and Dashboards
 How do you create a custom metric in Datadog?
 What is the purpose of tags in Datadog, and how should you design a tagging strategy?
 Explain how to build a dashboard using widgets in Datadog.
@@ -39,89 +39,89 @@ Can we share dahsboard status via mail ?
 
 
 
-Reports and Notebooks
+✅Reports and Notebooks
 Explain the concept of "Notebooks" in Datadog and their use case.
 What is the difference between a scheduled report and a notebook in Datadog?
 How would you setup report sharing ?
 
-
-Maintenance Window Setup
+✅Maintenance Window Setup
 What is a maintenance window, and why is it important?
 How can you scope maintenance windows using tags?
 
-Custom Monitoring
+✅Custom Monitoring
 Describe how to submit a custom metric to Datadog using the Agent.
 How would you set up alerts for custom metrics?
 
-Event Monitoring
+✅Event Monitoring
 How can you send events to Datadog?
 What are event streams, and how can you alert on events?
 
-Introduction to APM & RUM
+✅Introduction to APM & RUM
 Why is APM necessary if infrastructure monitoring already exists?
 What’s the difference between APM and RUM?
 How would you monitor a containerized microservice app using Datadog?
 How do you monitor Kubernetes clusters with Datadog?
 
-Explain the basics of distributed tracing.
+✅Explain the basics of distributed tracing.
 APM Monitoring
 How do you instrument a Spring Boot application for APM in Datadog?
 What are traces, spans, and service maps?
 How do you track error rates and latency in Datadog?
 
-Real User Monitoring (RUM)
+✅Real User Monitoring (RUM)
 How do you integrate RUM SDK in a Spring Boot application?
 What data does session replay provide?
 How can RUM help in understanding user journeys?
 
-APM & RUM on Containerized Applications
+✅APM & RUM on Containerized Applications
 What’s the difference between APM setup on host-based vs containerized apps?
 How would you monitor an app running in Docker Compose?
 Describe how to set up APM and RUM on Kubernetes (EKS).
 What Kubernetes components (nodes, pods, services) are monitored by Datadog?
 
-Synthetic Monitoring
+✅Synthetic Monitoring
 What is the difference between an HTTP test and a browser test in Synthetic Monitoring?
 How do you configure alerts based on synthetic test failures?
 
-Service Level Objectives (SLOs)
+✅Service Level Objectives (SLOs)
 What is the difference between SLA, SLO, and SLI?
 How do you define a monitor-based SLO in Datadog?
 What is an error budget, and how is it tracked?
 How would you approach setting up SLOs for a critical internal service?
 
-Database Monitoring
+✅Database Monitoring
 How do you monitor a PostgreSQL or MySQL database in Datadog?
 Where i can store a datadog integration config file?
 What are query performance metrics, and how can you track them?
 How do you visualize connection stats?
 
-Log Monitoring
+✅Log Monitoring
 How do you enable log collection on a host?
 Can we send log to Datadog without Datadog agent? Ans: Yes
 What is a log pipeline, and why are parsers necessary?
 How do you create log-based alerts in Datadog?
 
-Account & Access Management
+✅Account & Access Management
 How do you set up RBAC (Role-Based Access Control) in Datadog?
 What are best practices for organizing teams and users?
 How do you enforce security boundaries in a multi-team setup?
 
-AWS Integration
+✅AWS Integration
 Describe the process of integrating Datadog with AWS.
 How does Datadog monitor AWS resources and services?
 How do you configure Datadog integrations for services like AWS or Kubernetes?
 What is auto-tagging, and why is it useful in cloud environments?
 
-RDS Integration: PostgreSQL
+✅RDS Integration: PostgreSQL
 How do you set up a PostgreSQL RDS instance for monitoring?
 How do you verify that Datadog is ingesting metrics from RDS?
 
-Datadog + Grafana Integration
+✅Datadog + Grafana Integration
 How do you install the Datadog plugin for Grafana?
+How do you integrate datadog datasource in Grafana 
 How do you build a Grafana dashboard using Datadog data?
 
-Scenario-Based Interview Questions
+✅Scenario-Based Interview Questions
 You notice high memory usage on a Kubernetes pod. How would you use Datadog to diagnose the issue?
 An alert was missed during a scheduled maintenance window. What steps would you take to prevent this in the future?
 How would you ensure consistent tagging across cloud environments for better observability?
