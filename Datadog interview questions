@@ -81,6 +81,7 @@ What Kubernetes components (nodes, pods, services) are monitored by Datadog?
 
 ✅Synthetic Monitoring
 What is the difference between an HTTP test and a browser test in Synthetic Monitoring?
+How do you enable mobile test in synthetic monitoring
 How do you configure alerts based on synthetic test failures?
 
 ✅Service Level Objectives (SLOs)
