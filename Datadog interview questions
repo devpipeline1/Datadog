@@ -37,39 +37,45 @@ How will you setup alerting ? explain available options and feature
 Can we send alertnotification to other channels like email,slack,pagerduty etc ..?
 Can we share dahsboard status via mail ?
 
-
-
 ✅Reports and Notebooks
 Explain the concept of "Notebooks" in Datadog and their use case.
 What is the difference between a scheduled report and a notebook in Datadog?
+How would you schedule a recurring report for system uptime across multiple regions?
+Can you customize the format and recipients of a Datadog Report?
 How would you setup report sharing ?
 
 ✅Maintenance Window Setup
 What is a maintenance window, and why is it important?
+What are the steps to create a recurring Maintenance Window in Datadog ?
+Your team is deploying a major release at midnight. How would you use Maintenance Windows to prevent alert fatigue?
 How can you scope maintenance windows using tags?
 
 ✅Custom Monitoring
+What is custom monitoring in Datadog and why would you use it?
 Describe how to submit a custom metric to Datadog using the Agent.
 How would you set up alerts for custom metrics?
 
 ✅Event Monitoring
 How can you send events to Datadog?
 What are event streams, and how can you alert on events?
+How do you mute alerts during planned maintenance using event tags?
 
 ✅Introduction to APM & RUM
 Why is APM necessary if infrastructure monitoring already exists?
 What’s the difference between APM and RUM?
+How does Datadog APM help in identifying performance bottlenecks?
 How would you monitor a containerized microservice app using Datadog?
 How do you monitor Kubernetes clusters with Datadog?
+Explain the basics of distributed tracing.
 
-✅Explain the basics of distributed tracing.
-APM Monitoring
-How do you instrument a Spring Boot application for APM in Datadog?
+✅APM Monitoring
+How do you instrument an application to send traces to Datadog?
 What are traces, spans, and service maps?
 How do you track error rates and latency in Datadog?
+Your application is experiencing slow response times. How would you use Datadog APM to troubleshoot?
 
 ✅Real User Monitoring (RUM)
-How do you integrate RUM SDK in a Spring Boot application?
+How do you integrate RUM SDK in a application?
 What data does session replay provide?
 How can RUM help in understanding user journeys?
 
@@ -100,18 +106,24 @@ How do you visualize connection stats?
 How do you enable log collection on a host?
 Can we send log to Datadog without Datadog agent? Ans: Yes
 What is a log pipeline, and why are parsers necessary?
+What is the Sensitive Data Scanner in Datadog and why is it important ?
+What types of sensitive data can Datadog scan for (e.g., credentials, tokens)
+Can you customize detection rules for specific data patterns ?
+How do you exclude certain log sources or fields from scanning ?
+What actions can Datadog take when sensitive data is detected in logs ?
 How do you create log-based alerts in Datadog?
 
 ✅Account & Access Management
 How do you set up RBAC (Role-Based Access Control) in Datadog?
 What are best practices for organizing teams and users?
+What are the 3 types of account roles datadog has ?
+Can we create custom account role ?
 How do you enforce security boundaries in a multi-team setup?
 
 ✅AWS Integration
 Describe the process of integrating Datadog with AWS.
 How does Datadog monitor AWS resources and services?
-How do you configure Datadog integrations for services like AWS or Kubernetes?
-What is auto-tagging, and why is it useful in cloud environments?
+How do you configure Datadog integrations for services like AWS EC2 or Kubernetes?
 
 ✅RDS Integration: PostgreSQL
 How do you set up a PostgreSQL RDS instance for monitoring?
