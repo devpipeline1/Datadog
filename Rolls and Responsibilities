@@ -1,0 +1,49 @@
+Rolls and Responsibilities 
+==========================
+
+Ensure uptime, performance, and scalability of Datadog’s internal systems.
+Create and maintain dashboards.
+Create SLOs, and alerting systems across services.
+Enable log monitoring and support to enable custom folder logs monitoring (/oracle/logs or /apps/logs)
+Using automation deploy datadog agent on all commissioning servers
+Support application teams to enable APM and RUM monitoring.
+Support application teams to create synthetic monitoring.
+Schedule and maintain reports and notbooks.
+Support changes by disabling alerts using maintanence windows setup.
+Support to create custom monitoring.
+Support Database team to integrate self-pased or cloud database.
+Maintain RBAC (Role base access control) and teams to provide user access.
+Act as incident commanders during outages, lead postmortems, and drive fixes.
+Safely deploy updates and features without compromising system stability.
+Forecast infrastructure needs and optimize resource usage.
+Reduce manual toil by scripting and automating operational tasks.
+Collaborate with security teams to enforce guardrails and protect customer data.
+
+Day-to-Day Activities of a Datadog SRE
+=====================================
+
+- Morning Checks
+    Review overnight alerts and incident reports.
+    Check dashboards for anomalies in latency, error rates, or resource usage.
+    Follow up on ongoing incidents or maintenance tasks.
+- Standups & Planning
+    Join team standups to sync on priorities.
+    Discuss upcoming deployments, scaling needs, or reliability risks.
+- Project Work
+    Build or improve automation scripts.
+    Enhance monitoring coverage for new services.
+    Work on scaling infrastructure or optimizing performance.
+- Incident Response (as needed)
+    Jump into active incidents, coordinate with engineers, and communicate status to stakeholders.
+    Document findings for postmortems.
+- Collaboration & Reviews
+    Review code changes for reliability impact.
+    Advise developers on best practices for observability and fault tolerance.
+- Security & Compliance Tasks
+    Audit access permissions.
+    Implement new security monitoring rules.
+- End-of-Day Wrap-Up
+    Update tickets and documentation.
+    Handoff critical context to the next on-call engineer.
+
+
