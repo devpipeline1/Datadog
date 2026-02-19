@@ -34,23 +34,25 @@ sudo passwd ansible
 su - ansible
 mkdir -p /home/ansible/.ssh
 chmod 755 /home/ansible/.ssh
+
 ✅ 3.create authorized_keys inside .ssh directory 
 touch /home/ansible/.ssh/authorized_keys
 chmod 644 /home/ansible/.ssh/authorized_keys
 
-✅ 4.copy the public key to from server to client (run below command from server, please update your client ip in below command)
+✅ 4.update below options settings in /etc/ssh/sshd_config (client host)
+PermitRootLogin yes
+PubkeyAuthentication yes
+AuthorizedKeysFile      .ssh/authorized_keys
+PasswordAuthentication yes
+
+✅ 5.copy the public key to from server to client (run below command from server, please update your client ip in below command)
 ssh-copy-id -i ~/.ssh/id_ansible.pub ansible@<client-ip>
 if the above command not wokring, then
 copy /home/ansible/.ssh/id_ansible.pub from server and paste it on client end file /home/ansible/.ssh/authorized_keys
 
-✅ 5.make password less login (run this on client as a root user)
-echo 'ansible ALL=(ALL) NOPASSWD:ALL' | sudo tee /etc/sudoers.d/ansible
+✅ 6.make password less login (run this on client as a root user)
+echo 'ansible ALL=(ALL) NOPASSWD:ALL' | sudo tee /etc/sudoers.d/ansible     # here ansible is client user
 sudo chmod 440 /etc/sudoers.d/ansible
-
-✅ 6.Make sure below 2 options should be uncommented on sshd_config file in client
-sudo vi /etc/ssh/sshd_config
-PubkeyAuthentication yes
-AuthorizedKeysFile      .ssh/authorized_keys
 
 ======================
 Install ansible galaxy (server end)
@@ -68,6 +70,7 @@ ansible-galaxy collection install -r requirement.yaml
 
 ✅ 3.Create /ansible/inventory.ini
 [linux]
+#clientserver ansible_host=2.3.234.5 ansible_user=clientuser ansible_ssh_private_key_file=~/.ssh/id_rsa
 linux1 ansible_host=13.232.236.97 ansible_user=ansible ansible_ssh_private_key_file=~/.ssh/id_ansible
 
 ✅ 4.write playbook to install datadog agent on linux hosts
