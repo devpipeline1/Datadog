@@ -118,5 +118,8 @@ docker push <your-registry>/<your-image>:latest
 image: <your-registry>/<your-image>:latest
 
 
+docker build . -t devpipeline/easytrade:rum
+
+
 
 
