@@ -1,26 +1,26 @@
-Send logs to datadog via telnet
+✅ Send logs to datadog via datadog intake endpoint api
 
-you can send logs to Datadog via Telnet, though it's a bit unconventional and mostly used for testing or educational purposes. Datadog supports log ingestion over TCP port 10514, which allows you to push raw log data directly to their intake endpoint.
+Datadog supports log ingestion over TCP port 10514, which allows you to push raw log data directly to their intake endpoint.
 
-https://docs.datadoghq.com/api/latest/logs/?site=us5
+https://docs.datadoghq.com/api/latest/logs/?site=us5 --> reference siet
 
 curl -X POST "https://http-intake.logs.us5.datadoghq.com/api/v2/logs" \
   -H "Content-Type: application/json" \
   -H "DD-API-KEY: <your_api_key>" \
   -d '[{"message": "Hi this is my test logs for datadog log mpnitoring", "ddsource": "springboot", "service": "petclinic-app"}]'
 
-inject logs from server file/custom file
+✅ Inject logs from server custom log file
 
-Open vi /etc/datadog-agent/datadog.yaml file and enable log monitoring
+✅ Open vi /etc/datadog-agent/datadog.yaml file and enable log monitoring
 logs_enabled: true
 
-create a directory inside /etc/datadog-agent/conf.d for your application 
+✅ Create a directory inside /etc/datadog-agent/conf.d for your application 
 /etc/datadog-agent/conf.d/myapp.d
 
-create conf.yaml file inside your myapp.d folder
+✅ Create conf.yaml file inside your myapp.d folder
 /etc/datadog-agent/conf.d/myapp.d/conf.yaml
 
-update below contenet in conf.yaml
+✅ Update below contenet in conf.yaml
 
 	logs:
 	  - type: file
@@ -30,9 +30,10 @@ update below contenet in conf.yaml
 		tags:
 		  - env:production
 
+✅ Restart datadog agent service
 sudo systemctl restart datadog-agent
 
-create config file at 
+✅ to monitori Linux OS audit log 
 /etc/datadog-agent/conf.d/linux_audit_logs.d/conf.yaml
 
 logs:
