@@ -11,7 +11,26 @@ curl -X POST "https://http-intake.logs.us5.datadoghq.com/api/v2/logs" \
 
 inject logs from server file/custom file
 
+Open vi /etc/datadog-agent/datadog.yaml file and enable log monitoring
 logs_enabled: true
+
+create a directory inside /etc/datadog-agent/conf.d for your application 
+/etc/datadog-agent/conf.d/myapp.d
+
+create conf.yaml file inside your myapp.d folder
+/etc/datadog-agent/conf.d/myapp.d/conf.yaml
+
+update below contenet in conf.yaml
+
+	logs:
+	  - type: file
+		path: /var/log/myapp/easytrade.log
+		service: myapp
+		source: custom
+		tags:
+		  - env:production
+
+sudo systemctl restart datadog-agent
 
 create config file at 
 /etc/datadog-agent/conf.d/linux_audit_logs.d/conf.yaml
