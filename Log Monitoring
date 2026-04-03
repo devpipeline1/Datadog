@@ -22,13 +22,13 @@ logs_enabled: true
 
 ✅ Update below contenet in conf.yaml
 
-	logs:
-	  - type: file
-		path: /var/log/myapp/easytrade.log
-		service: myapp
-		source: custom
-		tags:
-		  - env:production
+logs:
+  - type: file
+    path: /var/log/myapp/custom.log
+    service: myapp
+    source: custom
+    tags:
+      - env:production
 
 ✅ Restart datadog agent service
 sudo systemctl restart datadog-agent
