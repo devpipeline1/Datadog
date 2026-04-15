@@ -121,5 +121,28 @@ image: <your-registry>/<your-image>:latest
 docker build . -t devpipeline/easytrade:rum
 
 
+==============
+Windows
+=============
+
+winget install Amazon.AWSCLI 
+
+ kubectl config get-contexts
+
+$ aws eks update-kubeconfig --region ap-south-1 --name my-cluster11
+Added new context arn:aws:eks:ap-south-1:045667250694:cluster/my-cluster11 to C:\Users\Windows\.kube\config
+
+$ kubectl config use-context arn:aws:eks:ap-south-1:045667250694:cluster/my-cluster11
+
+if you want to switch from one cluster to another
+$ kubectl config use-context arn:aws:eks:ap-south-1:50694:cluster/my-cluster11
+Switched to context "arn:aws:eks:ap-south-1:250694:cluster/my-cluster11".
+
+Windows@DESKTOP-9HVNDLS MINGW64 ~
+$ kubectl get nodes
+NAME                                            STATUS   ROLES    AGE   VERSION
+ip-192-168-51-255.ap-south-1.compute.internal   Ready    <none>   61m   v1.34.4-eks-f69f56f
+ip-192-168-88-173.ap-south-1.compute.internal   Ready    <none>   61m   v1.34.4-eks-f69f56f
+
 
 
