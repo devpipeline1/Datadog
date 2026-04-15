@@ -1,1 +1,8 @@
 
+curl -X PUT "http://a7185eb5-2125585009.ap-south-1.elb.amazonaws.com/feature-flag-service/v1/flags/db_not_responding" \
+  -H "accept: application/json" \
+  -H "Content-Type: application/json" \
+  -d '{"enabled": false}'
+
+
+curl -X GET "http://a7185eb5118dd4f9894b5616c4dd1153-2125585009.ap-south-1.elb.amazonaws.com/feature-flag-service/v1/flags"
