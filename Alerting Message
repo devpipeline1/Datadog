@@ -1,0 +1,37 @@
+{{#is_alert}}
+⚠️ High CPU Utilization Detected!
+
+Host: {{host.name}}
+Current CPU Usage: {{value}}%
+
+Threshold: > 80% over the last 5 minutes
+
+Impact: This may cause application slowdowns or degraded performance.
+
+Next Steps:
+- Check running processes with high CPU usage (`top` or `htop`).
+- Verify if any batch jobs or deployments are running.
+- Consider scaling resources or redistributing workloads.
+
+@oncall @incident
+{{/is_alert}}
+
+{{#is_warning}}
+⚠️ CPU Utilization Warning
+
+Host: {{host.name}}
+Current CPU Usage: {{value}}%
+
+Threshold: > 70% over the last 5 minutes
+
+Monitor closely — may escalate to alert if sustained.
+{{/is_warning}}
+
+{{#is_recovery}}
+✅ CPU Utilization Back to Normal
+
+Host: {{host.name}}
+Current CPU Usage: {{value}}%
+
+System performance has stabilized.
+{{/is_recovery}}
