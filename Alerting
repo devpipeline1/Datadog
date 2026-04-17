@@ -1,4 +1,5 @@
-{{#is_alert}}
+{{#is_alert}}{{/is_alert}}
+
 ⚠️ High CPU Utilization Detected!
 
 Host: {{host.name}}
@@ -12,9 +13,6 @@ Next Steps:
 - Check running processes with high CPU usage (`top` or `htop`).
 - Verify if any batch jobs or deployments are running.
 - Consider scaling resources or redistributing workloads.
-
-@oncall @incident
-{{/is_alert}}
 
 {{#is_warning}}
 ⚠️ CPU Utilization Warning
@@ -35,3 +33,9 @@ Current CPU Usage: {{value}}%
 
 System performance has stabilized.
 {{/is_recovery}}
+
+
+Stimulate CPU
+============
+sudo yum install stress 
+stress --cpu 4 --timeout 60
