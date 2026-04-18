@@ -12,13 +12,11 @@ logs:
       channel_path: "Security"
       source: Server
       service: Security
-      tags: [env:dev, src:os]
 
     - type: windows_event
       channel_path: "Application"
       source: myapp
       service: myapp-service
-      tags: [env:dev, src:app]
 
 
 Enable the log collection in datadog_agent.yaml
