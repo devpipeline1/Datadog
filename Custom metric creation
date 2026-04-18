@@ -26,7 +26,21 @@ class CustomTestCount(AgentCheck):
 instances:
   - min_collection_interval: 60
 
+Setup permissions:
+=================
+
 chown dd-agent:dd-agent /etc/datadog-agent/checks.d/custom_test_count.py
 chown dd-agent:dd-agent -R /etc/datadog-agent/conf.d/custom_test_count.d
 
 Please make sure, dd-agent should have monitoring directory (/tmp) should atleast read permission
+
+
+Note: 
+=====
+When the Agent starts, it looks for matching pairs:
+
+checks.d/custom_test_count.py
+conf.d/custom_test_count.d/
+
+If names match, the Agent knows:
+“This YAML config belongs to this Python check.
