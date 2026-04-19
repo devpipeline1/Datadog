@@ -1,0 +1,82 @@
+FOR windows git bash
+
+####################################################################################################################################
+1.kubectl – A command line tool for working with Kubernetes clusters. For more information, see Installing or updating kubectl.
+####################################################################################################################################
+
+Refer "https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/"
+
+Install kubectl
+
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/windows/amd64/kubectl.exe"
+
+Then move it into your PATH:
+mkdir -p ~/bin
+mv ./kubectl.exe ~/bin/kubectl.exe
+echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+source ~/.bashrc
+
+kubectl version --client
+
+####################################################################################################################################
+2.eksctl – A command line tool for working with EKS clusters that automates many individual tasks. For more information, see Installing or updating.
+####################################################################################################################################
+Refer "https://eksctl.io/installation/"
+
+Install eksctl
+ Download the Windows binary directly
+curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_Windows_amd64.zip"
+
+Unzip it
+unzip eksctl_Windows_amd64.zip -d /tmp
+
+Move it into your PATH
+mkdir -p ~/bin
+mv /tmp/eksctl.exe ~/bin/eksctl.exe
+echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+source ~/.bashrc
+
+Verify the installation
+eksctl version
+
+####################################################################################################################################
+3.AWS CLI – A command line tool for working with AWS services, including Amazon EKS. For more information, see Installing, updating, and uninstalling the AWS CLI in the AWS Command Line Interface User Guide. After installing the AWS CLI, we recommend that you also configure it. For more information, see Quick configuration with aws configure in the AWS Command Line Interface User Guide.
+####################################################################################################################################
+
+Refer "https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html"
+
+Open powershell and run below command
+winget install Amazon.AWSCLI 
+
+$ aws configure
+
+Tip: You can deliver temporary credentials to the AWS CLI using your AWS Console session by running the command 'aws login'.
+
+AWS Access Key ID [None]:
+AWS Secret Access Key [None]:
+Default region name [None]: ap-south-1
+Default output format [None]:
+
+
+Create below kubeconfig file
+$ aws eks update-kubeconfig --region ap-south-1 --name my-cluster11
+Added new context arn:aws:eks:ap-south-1:045667250694:cluster/my-cluster11 to C:\Users\Windows\.kube\config
+
+
+## Create a EKS cluster with EKSCTL
+
+```
+eksctl create cluster --name my-cluster1 --region ap-south-1
+```
+
+## Delete the cluster
+
+```
+eksctl delete cluster --name my-cluster1 --region ap-south-1
+```
+nohup eksctl create cluster --name my-cluster7 --region ap-south-1 > cluster.log 2>&1 &
+
+aws eks update-kubeconfig --region ap-south-1 --name mydemo
+eksctl create cluster --name auto-mode-cluster --region us-west-2 --auto-mode
+eks-node-viewer --resources=cpu,memory --extra-labels=topology.kubernetes.io/zone --node-sort=cpu=dsc
+
