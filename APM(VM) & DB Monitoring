@@ -43,6 +43,7 @@ chmod +x /myproject/spring-petclinic/start.sh
 ==========================================
 Create a service for petclinic application
 ==========================================
+vi /etc/systemd/system/petclinic.service
 
 [Unit]
 Description=Spring PetClinic Application with Datadog Java Agent
@@ -68,6 +69,14 @@ StandardError=file:/myproject/spring-petclinic/log/petclinic-error.log
 
 [Install]
 WantedBy=multi-user.target
+
+Reload systemd to Register the Service
+--------------------------------------
+sudo systemctl daemon-reload
+
+Start the service
+-----------------
+sudo systemctl start myapp.service
 
 
 ================================
