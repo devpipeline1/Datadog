@@ -2,7 +2,7 @@ stop petclinic service
 ======================
 systemctl stop petclinic
 
-**update datadog RUM snippet in to source code**
+__update datadog RUM snippet in to source code__
 vi /myproject/spring-petclinic/src/main/resources/templates/fragments/layout.html
 
 <!-- THis scrript for RUM -->
