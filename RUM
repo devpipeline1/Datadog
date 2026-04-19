@@ -1,0 +1,40 @@
+stop petclinic service
+======================
+systemctl stop petclinic
+
+**update datadog RUM snippet in to source code**
+vi /myproject/spring-petclinic/src/main/resources/templates/fragments/layout.html
+
+<!-- THis scrript for RUM -->
+<script
+    src="https://www.datadoghq-browser-agent.com/us1/v6/datadog-rum.js"
+    type="text/javascript"
+    crossorigin>
+</script>
+<script>
+    window.DD_RUM && window.DD_RUM.init({
+        applicationId: '59b18896-c1b3-4335-b079-b9685c89cb12',
+        clientToken: 'pub163081c7988fd9d0a90794fa5aee319e',
+        site: 'us5.datadoghq.com',
+        service: 'myapp',             // e.g. 'web-app', 'dashboard-ui'
+        env: 'prod',                     // e.g. 'prod', 'staging', 'dev'
+        version: '1.0.0',           // e.g. '1.0.0'
+        sessionSampleRate: 100,                // capture 100% of sessions
+        trackResources: true,                  // Enable Resource tracking
+        trackUserInteractions: true,           // Enable Action tracking
+        trackLongTasks: true,                  // Enable Long Tasks tracking
+
+        // ----- Recommended options (commented by default) -----
+        // allowedTracingUrls: '<BACKEND-URL>', // Enable distributed tracing
+        // sessionReplaySampleRate: 20,        // Record replay for 20% of sessions
+        // defaultPrivacyLevel: 'mask-user-input', // or 'allow' / 'mask-all'
+    });
+</script>
+
+====================================================================================================
+Run below commands inside cd /myproject/spring-petclinic
+./mvnw clean package
+./mvnw clean install
+./mvnw spring-boot:run
+
+Then, start service systemctl start petclinic
