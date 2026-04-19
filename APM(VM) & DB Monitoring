@@ -51,7 +51,7 @@ After=network.target
 
 [Service]
 Type=simple
-User=dd-agent
+User=root
 WorkingDirectory=/myproject/spring-petclinic
 ExecStart=/usr/bin/java \
   -javaagent:/myproject/spring-petclinic/dd-java-agent.jar \
