@@ -1,0 +1,34 @@
+1. Availability (Uptime)
+Metric: http.requests.success / http.requests.total
+
+Use Case: Ensures APIs like /auth/login, /orders, /quotes are available.
+
+Example SLO: 99.9% of login requests succeed over 30 days.
+
+2. Latency (Performance)
+Metric: http.request.duration (APM traces or custom metrics)
+
+Use Case: Measures how fast critical endpoints respond.
+
+Example SLO: 95% of order placement requests complete in <500ms.
+
+3. Error Rate
+Metric: http.requests.error / http.requests.total
+
+Use Case: Tracks server-side errors (5xx, failed workflows).
+
+Example SLO: ≤0.1% of portfolio requests fail.
+
+4. Correctness (Data Integrity)
+Metric: Custom metric from Synthetic tests (e.g., JSON body contains "assets")
+
+Use Case: Ensures responses are valid and complete.
+
+Example SLO: 99.9% of portfolio responses contain valid data.
+
+5. Workflow Success
+Metric: Synthetic multistep test success rate (synthetics.test.success)
+
+Use Case: End-to-end trading flow (login → portfolio → order → status → quotes).
+
+Example SLO: 99% of workflows succeed across all steps
