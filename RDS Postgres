@@ -1,3 +1,5 @@
+Refer "https://docs.datadoghq.com/database_monitoring/setup_postgres/rds/?tab=postgres15"
+
 # Update packages
 sudo yum update -y
 
